@@ -33,6 +33,7 @@ export function App() {
   const engine = useRef(new EngineClient());
   const operation = useRef(0);
   const operationActive = useRef(false);
+  const sampleRequest = useRef<AbortController | null>(null);
   const fileInput = useRef<HTMLInputElement>(null), presetInput = useRef<HTMLInputElement>(null), reviewHeading = useRef<HTMLHeadingElement>(null);
   const [source, setSource] = useState<{ bytes: Uint8Array; name: string } | null>(null);
   const [info, setInfo] = useState<DocumentInfo | null>(null);
@@ -57,7 +58,7 @@ export function App() {
         setSaved(value.map(validatePreset));
       }
     } catch { setNotice('Saved layouts could not be read. Import a preset file or save a fresh layout.'); }
-    return () => engine.current.cancel();
+    return () => { sampleRequest.current?.abort(); engine.current.cancel(); };
   }, []);
   useEffect(() => {
     const escape = (event: KeyboardEvent) => { if (event.key === 'Escape') setDrawing(false); };
@@ -80,10 +81,12 @@ export function App() {
     if (tab === 'split') changePreset({ ...preset, grouping: { ...preset.grouping, region } }); else updateField({ region });
   }
   function stop() {
+    sampleRequest.current?.abort(); sampleRequest.current = null;
     operation.current++; operationActive.current = false; engine.current.cancel(); setBusy(null); setProgress(null); setApproved(false); setDirty(true); setLastExport(null);
     setNotice('Cancelled. No incomplete download was created. You can run preflight again.');
   }
   function reset() {
+    sampleRequest.current?.abort(); sampleRequest.current = null;
     operation.current++; operationActive.current = false; engine.current.cancel(); setSource(null); setInfo(null); setAnalysis(null); setOverrides({}); setApproved(false); setDirty(false); setBusy(null); setProgress(null); setError(''); setNotice('Document cleared from the workbench. Saved layout rules remain on this device.'); setLastExport(null); setPreviewText(null); setPreviewError(''); setPage(1);
   }
   async function loadFile(file: File) {
@@ -101,14 +104,22 @@ export function App() {
     finally { if (token === operation.current) { operationActive.current = false; setBusy(null); setProgress(null); } }
   }
   async function sample() {
-    if (busy) return;
+    if (busy || operationActive.current) return;
+    const token = ++operation.current;
+    const controller = new AbortController(); sampleRequest.current = controller;
+    operationActive.current = true; setBusy('load');
+    setProgress({ phase: 'Opening synthetic sample', done: 0, total: 1 });
     try {
       setError('');
-      const response = await fetch(`${import.meta.env.BASE_URL}samples/reportbatch-sample.pdf`);
+      const response = await fetch(`${import.meta.env.BASE_URL}samples/reportbatch-sample.pdf`, { signal: controller.signal });
       if (!response.ok) throw new Error('The synthetic sample could not be loaded. Use a local PDF instead.');
+      const bytes = await response.arrayBuffer();
+      if (token !== operation.current) return;
       changePreset(cloneDefault());
-      await loadFile(new File([await response.arrayBuffer()], 'reportbatch-sample.pdf', { type: 'application/pdf' }));
-    } catch (error) { setError((error as Error).message); }
+      operationActive.current = false; setBusy(null); sampleRequest.current = null;
+      await loadFile(new File([bytes], 'reportbatch-sample.pdf', { type: 'application/pdf' }));
+    } catch (error) { if (token === operation.current && (error as Error).name !== 'AbortError') setError((error as Error).message); }
+    finally { if (token === operation.current) { operationActive.current = false; setBusy(null); setProgress(null); sampleRequest.current = null; } }
   }
   async function preflight() {
     if (!source || busy || operationActive.current) return;
@@ -152,10 +163,16 @@ export function App() {
     } catch (error) { setError((error as Error).message || 'This browser could not save the layout. Export a preset file instead.'); }
   }
   async function importPreset(file: File) {
+    if (busy || operationActive.current) return;
+    const token = ++operation.current; operationActive.current = true; setBusy('load');
+    setProgress({ phase: 'Reading layout preset', done: 0, total: 1 });
     try {
       if (file.size > MAX_PRESET_BYTES) throw new Error('Preset exceeds 64 KiB.');
-      const next = parsePreset(await file.text()); changePreset(next); setSelectedField(next.fields[0].key); setNotice(`Imported “${next.name}”. Run preflight before export.`); setError('');
-    } catch (error) { setError((error as Error).message); }
+      const text = await file.text();
+      if (token !== operation.current) return;
+      const next = parsePreset(text); changePreset(next); setSelectedField(next.fields[0].key); setNotice(`Imported “${next.name}”. Run preflight before export.`); setError('');
+    } catch (error) { if (token === operation.current) setError((error as Error).message); }
+    finally { if (token === operation.current) { operationActive.current = false; setBusy(null); setProgress(null); } }
   }
   function exportPreset() {
     try { download(serializePreset(preset), sanitizeFilename(preset.name).filename.replace(/\.pdf$/, '.reportbatch.json'), 'application/json'); setError(''); }

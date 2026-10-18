@@ -6,7 +6,7 @@ import { PDFDocument, PDFName, StandardFonts } from 'pdf-lib';
 import { extractField } from '../src/core/text';
 import { getDocument } from 'pdfjs-dist/legacy/build/pdf.mjs';
 import { strFromU8, unzipSync } from 'fflate';
-import { abortError, exportBundle, loadDocument, validatePdf } from '../src/core/pdf';
+import { abortError, assertNoHiddenPages, exportBundle, loadDocument, validatePdf } from '../src/core/pdf';
 import { analyzeBatch } from '../src/core/plan';
 import { DEFAULT_PRESET, MAX_FILE_BYTES, MAX_PAGES, sha256 } from '../src/core/preset';
 import type { Manifest } from '../src/core/types';
@@ -133,5 +133,25 @@ test('presentation actions and article-thread cross-page references reject befor
     await assert.rejects(()=>loadDocument(bytes,'unsupported.pdf',open),/actions|threads/);
     const source=await read(),p=structuredClone(DEFAULT_PRESET),plan=await analyzeBatch(source.info,source.pages,p);
     await assert.rejects(()=>exportBundle({...source,bytes},p,{},plan.id),/actions|threads/);
+  }
+});
+
+test('private application references reject and hidden direct or cyclic page graphs fail verification', async () => {
+  const original=await fixture('public/samples/reportbatch-sample.pdf');
+  const pdf=await PDFDocument.load(original);
+  pdf.getPage(0).node.set(PDFName.of('PieceInfo'),pdf.context.obj({ReportApp:{LastModified:'D:20260101000000Z',Private:pdf.getPage(1).ref}}));
+  const bytes=await pdf.save();
+  await assert.rejects(()=>loadDocument(bytes,'piece-info.pdf',open),/private application/);
+  for(const direct of [false,true]) {
+    const source=await PDFDocument.load(original);
+    const hidden=direct?source.getPage(1).node:source.getPage(1).ref;
+    const cycle=source.context.obj({Hidden:hidden});
+    const cycleRef=source.context.register(cycle);cycle.set(PDFName.of('Cycle'),cycleRef);
+    source.getPage(0).node.set(PDFName.of('SyntheticPrivateData'),source.context.obj([cycleRef]));
+    const output=await PDFDocument.create();
+    output.addPage((await output.copyPages(source,[0]))[0]);
+    assert.throws(()=>assertNoHiddenPages(output),/hidden page references/);
+    const reopened=await PDFDocument.load(await output.save());
+    assert.throws(()=>assertNoHiddenPages(reopened),/hidden page references/);
   }
 });

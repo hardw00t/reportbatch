@@ -32,3 +32,7 @@ No OCR, password removal, signature validation, redaction, forensic preservation
 3. Cancel a slow job, reduce batch size, then rerun preflight. Cancellation never emits a partial ZIP.
 4. On parser/worker errors, reload a fresh, flat searchable source. Errors do not trigger network fallback or OCR.
 5. After export, open the ZIP, compare filenames and source-page lineage, and inspect report content. Downloaded manifests are sensitive work products.
+
+## PDF object-graph limitation
+
+Article threads, presentation steps and PieceInfo application metadata are rejected. Export also inspects every serialized object and nested dictionary/array/stream dictionary, with cycle protection, and rejects Page dictionaries outside the output page tree. This catches hidden cross-page references that visible page counts alone miss. It does not prove complete content isolation: copied shared resources, unused XObjects or private metadata can contain non-visible content without an extra Page dictionary. ReportBatch is not a redaction/sanitization service; do not treat splitting as a confidentiality boundary for untrusted PDFs.

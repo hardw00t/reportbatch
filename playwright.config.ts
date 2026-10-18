@@ -12,13 +12,13 @@ export default defineConfig({
   use: {
     baseURL: 'http://127.0.0.1:4173',
     browserName: 'chromium',
-    channel: process.env.PW_CHANNEL ?? 'chrome',
+    channel: process.env.PW_EXECUTABLE_PATH ? undefined : process.env.PW_CHANNEL ?? 'chrome',
     headless: true,
     viewport: { width: 1440, height: 1050 },
     acceptDownloads: true,
     trace: 'retain-on-failure',
     screenshot: 'only-on-failure',
-    launchOptions: { args: ['--enable-precise-memory-info'] },
+    launchOptions: { executablePath: process.env.PW_EXECUTABLE_PATH, args: ['--enable-precise-memory-info'] },
   },
   webServer: {
     command: 'npm run serve',

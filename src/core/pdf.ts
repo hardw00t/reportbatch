@@ -1,4 +1,4 @@
-import { PDFDocument, PDFArray, PDFDict, PDFName } from 'pdf-lib';
+import { PDFDocument, PDFArray, PDFDict, PDFName, PDFObject, PDFRef, PDFStream } from 'pdf-lib';
 import { strFromU8, strToU8, unzipSync, zipSync } from 'fflate';
 import type { PDFDocumentProxy, PDFPageProxy } from 'pdfjs-dist';
 import { MAX_EXPORT_BYTES, MAX_FILE_BYTES, MAX_PAGES, sha256 } from './preset';
@@ -69,16 +69,39 @@ export async function validatePdf(bytes: Uint8Array): Promise<PDFDocument> {
   catch { throw new Error('This PDF could not be parsed safely. Its page tree is malformed. Export a fresh copy from its source.'); }
   if (pageCount < 1 || pageCount > MAX_PAGES) throw new Error(`Use a PDF with 1–${MAX_PAGES} pages. Split larger files into smaller source batches first.`);
   if (pdf.catalog.has(PDFName.of('AF'))) throw new Error('PDF attachments are unsupported. Use a clean, flat searchable PDF.');
-  for (const key of ['AcroForm', 'Perms', 'Collection', 'OpenAction', 'AA', 'OCProperties', 'Threads']) {
+  for (const key of ['AcroForm', 'Perms', 'Collection', 'OpenAction', 'AA', 'OCProperties', 'Threads', 'PieceInfo']) {
     if (pdf.catalog.has(PDFName.of(key))) throw new Error('Forms, signatures, portfolios, layers and document actions are unsupported. Export a flat, searchable PDF first; signatures will not carry over.');
   }
   const names = pdf.catalog.lookup(PDFName.of('Names'));
   if (names instanceof PDFDict && (names.has(PDFName.of('EmbeddedFiles')) || names.has(PDFName.of('JavaScript')))) throw new Error('PDF attachments and JavaScript are unsupported. Use a clean, flat searchable PDF.');
   for (const [index, page] of pdf.getPages().entries()) {
     const annotations = page.node.lookup(PDFName.of('Annots'));
-    if ((annotations && (!(annotations instanceof PDFArray) || annotations.size() > 0)) || ['AA', 'AF', 'PresSteps', 'B'].some(key => page.node.has(PDFName.of(key)))) throw new Error(`Page ${index+1} has annotations, form fields, actions, article threads or attachments. Export a flat searchable copy first.`);
+    if ((annotations && (!(annotations instanceof PDFArray) || annotations.size() > 0)) || ['AA', 'AF', 'PresSteps', 'B', 'PieceInfo'].some(key => page.node.has(PDFName.of(key)))) throw new Error(`Page ${index+1} has annotations, form fields, actions, article threads, private application data or attachments. Export a flat searchable copy first.`);
   }
   return pdf;
+}
+
+// Count every serialized Page object, including direct dictionaries in arrays or
+// stream metadata. A correct visible page tree alone cannot detect copied beads
+// or private references to other reports. This is not content sanitization.
+export function assertNoHiddenPages(pdf: PDFDocument): void {
+  const expected = new Set<PDFDict>(pdf.getPages().map(page => page.node));
+  const seen = new Set<PDFObject>();
+  const pending: PDFObject[] = pdf.context.enumerateIndirectObjects().map(([, object]) => object);
+  while (pending.length) {
+    const object = pending.pop()!;
+    if (seen.has(object)) continue;
+    seen.add(object);
+    if (object instanceof PDFRef) {
+      const resolved = pdf.context.lookup(object); if (resolved) pending.push(resolved);
+    } else if (object instanceof PDFStream) pending.push(object.dict);
+    else if (object instanceof PDFDict) {
+      if (object.lookup(PDFName.of('Type')) === PDFName.of('Page') && !expected.has(object)) throw new Error('Generated PDF contains hidden page references outside the reviewed output. Nothing was exported.');
+      pending.push(...object.values());
+    } else if (object instanceof PDFArray) {
+      for (let i = 0; i < object.size(); i++) pending.push(object.get(i));
+    }
+  }
 }
 
 export async function loadDocument(bytes: Uint8Array, name: string, open: OpenPdf, progress: ReportProgress = () => {}, signal?: AbortSignal): Promise<LoadedDocument> {
@@ -134,6 +157,7 @@ export async function exportBundle(source: LoadedDocument, preset: Preset, overr
     document.setCreationDate(new Date('2000-01-01T00:00:00Z')); document.setModificationDate(new Date('2000-01-01T00:00:00Z'));
     const bytes = await document.save({ useObjectStreams: true });
     const reopened = await PDFDocument.load(bytes, { updateMetadata: false, throwOnInvalidObject: true });
+    assertNoHiddenPages(reopened);
     if (reopened.getPageCount() !== output.pages.length) throw new Error('Generated PDF page count failed verification. Nothing was exported.');
     for (const [i, page] of reopened.getPages().entries()) {
       const original = pdf.getPage(output.pages[i]-1);
@@ -163,6 +187,7 @@ export async function exportBundle(source: LoadedDocument, preset: Preset, overr
     checkAbort(signal);
     const data = unpacked[output.filename];
     const reopened = await PDFDocument.load(data, { updateMetadata: false, throwOnInvalidObject: true });
+    assertNoHiddenPages(reopened);
     if (reopened.getPageCount() !== output.pageCount || await sha256(data) !== output.sha256) throw new Error('An archived PDF failed page-count or checksum verification. Nothing was exported.');
     progress({ phase: 'Verifying archived PDFs', done: index+1, total: outputs.length });
     await tick();

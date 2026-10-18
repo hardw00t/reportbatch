@@ -13,3 +13,10 @@ Private review build; not release ready. Source migrated from `c2d55fb854b1c7c51
 ## Unfinished validation
 
 Browser tests did not execute application assertions on this VM: Chromium startup failed because a local socket was disallowed; the escalation launcher failed before execution. A supported cloud-browser attempt could not reach the loopback server. These are environment blockers, not passing browser evidence. Performance, final accessibility/mobile checks, broader visual fidelity, and UI async-operation race fixes remain pending. Earlier Mac observations in HANDOFF.md remain historical only. No public release, hosting, paid services, customer documents, or outreach occurred.
+
+## Second safety checkpoint
+
+- Added conservative PieceInfo rejection and a cycle-safe scan of all generated/reopened PDF objects, nested dictionaries, arrays and stream dictionaries. Every `/Type /Page` dictionary must be one of the output page-tree nodes. Synthetic direct and cyclic hidden-page references are rejected.
+- Full Node suite: **25 passed, zero failed**. Production typecheck/build passed. This is not a guarantee that PDFs contain only visible report content: shared resources, unused XObjects and private metadata may contain non-visible content without extra Page dictionaries. This tool is not a redaction or sanitization service. Do not use split output as a confidentiality boundary for untrusted documents.
+- Sample fetching and preset reading now use an immediate operation latch and generation checks. Cancellation aborts an outstanding sample request. Added delayed-sample/double-click/cancel regression to the browser suite; **not run due to the recorded browser environment blocker**. These UI fixes are typechecked, not browser-validated.
+- `PW_EXECUTABLE_PATH` optionally selects an installed Chromium binary for test environments; it does not change browser/system settings.

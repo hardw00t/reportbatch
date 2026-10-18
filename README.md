@@ -91,3 +91,7 @@ No hosting, checkout, payment, accounts, remote CI or outreach is activated. [Co
 `src/core/` contains pure preset/text/planning logic and PDF verification. `engine.worker.ts` owns expensive batch work; `EngineClient` terminates it on cancellation. `PdfPreview.tsx` renders one page at a time. React state binds approval to the active preflight. No application backend is required.
 
 Original code: [MIT](LICENSE). Pinned dependency/license metadata is in [docs/DEPENDENCIES.json](docs/DEPENDENCIES.json); the build ships upstream license text in `THIRD_PARTY_NOTICES.txt` and asset license files. License review is recorded in the release checklist.
+
+### Important confidentiality limitation
+
+Splitting is not redaction or sanitization. The workbench rejects known article-thread, presentation-step and private application metadata structures, and checks for hidden Page objects outside each output's page tree. Shared resources, unused XObjects or private metadata can still contain non-visible content without extra Page objects. Do not rely on split PDFs as a confidentiality boundary for untrusted source documents. See [VM validation](docs/VM-VALIDATION.md) for current fixes, evidence and browser-test blockers.

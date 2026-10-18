@@ -181,3 +181,23 @@ test('mobile layout, region drawing and imported numeric region controls stay us
   expect(layout.scrollWidth,JSON.stringify(layout)).toBeLessThanOrEqual(layout.width);
   const violations=(await new AxeBuilder({page}).withTags(['wcag2a','wcag2aa']).analyze()).violations;expect(violations).toEqual([]);
 });
+
+test('delayed sample is latched and cancellation prevents late replacement of a local batch', async ({page}) => {
+  const sampleBytes=await readFile('public/samples/reportbatch-sample.pdf');
+  let release!:()=>void;const gate=new Promise<void>(resolve=>{release=resolve;});
+  let requests=0;
+  await page.route('**/samples/reportbatch-sample.pdf',async route=>{
+    requests++;await gate;await route.fulfill({contentType:'application/pdf',body:sampleBytes}).catch(()=>{});
+  });
+  await page.goto('/');
+  await page.getByRole('button',{name:'Try the sample'}).evaluate((button:HTMLButtonElement)=>{button.click();button.click();});
+  await expect(page.getByRole('button',{name:'Cancel operation'})).toBeVisible();
+  await expect(pdfInput(page)).toBeDisabled();
+  await page.getByRole('button',{name:'Cancel operation'}).click();
+  await pdfInput(page).setInputFiles('public/samples/grouped-reports.pdf');
+  await expect(page.getByText('6 searchable pages ·',{exact:false})).toBeVisible();
+  release();
+  await check(page);
+  await expect(page.getByText('6 searchable pages ·',{exact:false})).toBeVisible();
+  expect(requests).toBeLessThanOrEqual(1);
+});
