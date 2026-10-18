@@ -2,7 +2,8 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
 import { resolve } from 'node:path';
-import { PDFDocument } from 'pdf-lib';
+import { PDFDocument, PDFName, StandardFonts } from 'pdf-lib';
+import { extractField } from '../src/core/text';
 import { getDocument } from 'pdfjs-dist/legacy/build/pdf.mjs';
 import { strFromU8, unzipSync } from 'fflate';
 import { abortError, exportBundle, loadDocument, validatePdf } from '../src/core/pdf';
@@ -102,4 +103,35 @@ test('actual page-count boundary accepts 500 pages and rejects 501', {timeout:12
   assert.equal(loaded.pages.length,MAX_PAGES);
   const plan=await analyzeBatch(loaded.info,loaded.pages,structuredClone(DEFAULT_PRESET));assert.equal(plan.blockingCount,0);
   await assert.rejects(()=>makeFixture([...reports,reports[0]]).then(validatePdf),/1–500/);
+});
+
+test('UserUnit preserves normalized text widths and clipping checks', async () => {
+  const widths:number[]=[];
+  for(const unit of [1,2]) {
+    const pdf=await PDFDocument.create(),font=await pdf.embedFont(StandardFonts.Helvetica);
+    const page=pdf.addPage([600,800]);page.node.set(PDFName.of('UserUnit'),pdf.context.obj(unit));
+    page.drawText('Author: LONG SURNAME',{x:60,y:700,size:12,font});
+    const source=await loadDocument(await pdf.save(),'user-unit.pdf',open);
+    widths.push(source.pages[0].tokens[0].box.width);
+    assert.match(extractField(source.pages[0],{...DEFAULT_PRESET.fields[1],region:{x:.09,y:.1,width:.15,height:.04}}).issue!,/clips text/);
+  }
+  assert.ok(Math.abs(widths[0]-widths[1])<1e-9);
+});
+test('presentation actions and article-thread cross-page references reject before export', async () => {
+  for(const kind of ['PresSteps','B','Threads']) {
+    const pdf=await PDFDocument.load(await fixture('public/samples/reportbatch-sample.pdf'));
+    if(kind==='PresSteps') pdf.getPage(0).node.set(PDFName.of(kind),pdf.context.obj({Type:'NavNode',NA:{S:'JavaScript',JS:'app.alert("synthetic")'}}));
+    else {
+      const bead1=pdf.context.obj({P:pdf.getPage(0).ref}),bead2=pdf.context.obj({P:pdf.getPage(1).ref});
+      const ref1=pdf.context.register(bead1),ref2=pdf.context.register(bead2);
+      bead1.set(PDFName.of('N'),ref2);bead1.set(PDFName.of('V'),ref2);
+      bead2.set(PDFName.of('N'),ref1);bead2.set(PDFName.of('V'),ref1);
+      if(kind==='B') pdf.getPage(0).node.set(PDFName.of('B'),pdf.context.obj([ref1]));
+      else pdf.catalog.set(PDFName.of('Threads'),pdf.context.obj([pdf.context.register(pdf.context.obj({F:ref1}))]));
+    }
+    const bytes=await pdf.save();
+    await assert.rejects(()=>loadDocument(bytes,'unsupported.pdf',open),/actions|threads/);
+    const source=await read(),p=structuredClone(DEFAULT_PRESET),plan=await analyzeBatch(source.info,source.pages,p);
+    await assert.rejects(()=>exportBundle({...source,bytes},p,{},plan.id),/actions|threads/);
+  }
 });

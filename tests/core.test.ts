@@ -99,3 +99,25 @@ test('source hash, rule edits and manual corrections invalidate the analysis ID'
   assert.equal(a.id,(await analyzeBatch(d,pages,p)).id);
   for(const b of [await analyzeBatch({...d,sha256:'changed'},pages,p),await analyzeBatch(d,pages,{...p,filenameTemplate:'{index}_{author}'}),await analyzeBatch(d,pages,p,{p1:{author:'Verified'}})])assert.notEqual(a.id,b.id);
 });
+
+test('marker reconstruction excludes outside columns and blocks clipping', async () => {
+  const p=preset();p.grouping.mode='marker';p.grouping.region={x:.04,y:.02,width:.6,height:.08};
+  const pages=[page(1),page(2,['Continuation']),page(3)];
+  pages[2].tokens.push({text:'003',box:{x:.8,y:.05,width:.1,height:.02},bx:480,by:45,dx:1,dy:0,advance:60,fontSize:12});
+  pages[2].lines=buildLines(pages[2].tokens);
+  assert.match(pages[2].lines[0].text,/REPORT START.*003/);
+  assert.deepEqual(groupPages(pages,p),{groups:[[1,2],[3]],issues:[]});
+  p.grouping.region.width=.4;
+  const result=await analyzeBatch(info(3),pages,p);
+  assert.ok(result.blockingCount>0);assert.ok(result.issues.some(issue=>issue.includes('clips text')));
+});
+test('filename truncation cannot reveal reserved devices and case-fold keys remain normalized', () => {
+  for(const device of ['CON','PRN','AUX','NUL','COM1','LPT9','ＣＯＮ','COM¹']) {
+    const {filename}=sanitizeFilename(device+' '+'. '.repeat(100)+'x');
+    assert.ok(filename.startsWith('_'));assert.ok(new TextEncoder().encode(filename).byteLength<=180);
+    assert.ok(!/^(con|prn|aux|nul|com[0-9]|lpt[0-9])(?:\.|$)/i.test(filename.normalize('NFKC')));
+  }
+  assert.equal(new TextEncoder().encode(sanitizeFilename('CON.'+'x'.repeat(200)).filename).byteLength,180);
+  assert.equal(collisionKey('ǰ.pdf'),collisionKey('J\u030c.pdf'));
+  assert.equal(collisionKey('ΐ.pdf'),collisionKey('Ι\u0308\u0301.pdf'));
+});

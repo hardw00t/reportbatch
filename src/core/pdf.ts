@@ -33,7 +33,9 @@ export async function extractPage(page: PDFPageProxy): Promise<PageText> {
     const style = content.styles[item.fontName];
     const ascent = Number.isFinite(style?.ascent) ? style.ascent : 0.8;
     const descent = Number.isFinite(style?.descent) ? style.descent : -0.2;
-    const height = upLength || fontSize, advance = Math.abs(item.width);
+    const height = upLength || fontSize;
+    // PDF.js widths use PDF coordinates; viewport coordinates include UserUnit.
+    const advance = Math.abs(item.width) * Math.hypot(viewport.transform[0], viewport.transform[1]);
     const corners = [
       [t[4]+ux*height*ascent, t[5]+uy*height*ascent],
       [t[4]+ux*height*descent, t[5]+uy*height*descent],
@@ -67,14 +69,14 @@ export async function validatePdf(bytes: Uint8Array): Promise<PDFDocument> {
   catch { throw new Error('This PDF could not be parsed safely. Its page tree is malformed. Export a fresh copy from its source.'); }
   if (pageCount < 1 || pageCount > MAX_PAGES) throw new Error(`Use a PDF with 1–${MAX_PAGES} pages. Split larger files into smaller source batches first.`);
   if (pdf.catalog.has(PDFName.of('AF'))) throw new Error('PDF attachments are unsupported. Use a clean, flat searchable PDF.');
-  for (const key of ['AcroForm', 'Perms', 'Collection', 'OpenAction', 'AA', 'OCProperties']) {
+  for (const key of ['AcroForm', 'Perms', 'Collection', 'OpenAction', 'AA', 'OCProperties', 'Threads']) {
     if (pdf.catalog.has(PDFName.of(key))) throw new Error('Forms, signatures, portfolios, layers and document actions are unsupported. Export a flat, searchable PDF first; signatures will not carry over.');
   }
   const names = pdf.catalog.lookup(PDFName.of('Names'));
   if (names instanceof PDFDict && (names.has(PDFName.of('EmbeddedFiles')) || names.has(PDFName.of('JavaScript')))) throw new Error('PDF attachments and JavaScript are unsupported. Use a clean, flat searchable PDF.');
   for (const [index, page] of pdf.getPages().entries()) {
     const annotations = page.node.lookup(PDFName.of('Annots'));
-    if ((annotations && (!(annotations instanceof PDFArray) || annotations.size() > 0)) || page.node.has(PDFName.of('AA')) || page.node.has(PDFName.of('AF'))) throw new Error(`Page ${index+1} has annotations, form fields, actions or attachments. Export a flat searchable copy first.`);
+    if ((annotations && (!(annotations instanceof PDFArray) || annotations.size() > 0)) || ['AA', 'AF', 'PresSteps', 'B'].some(key => page.node.has(PDFName.of(key)))) throw new Error(`Page ${index+1} has annotations, form fields, actions, article threads or attachments. Export a flat searchable copy first.`);
   }
   return pdf;
 }

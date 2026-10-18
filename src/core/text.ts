@@ -5,7 +5,7 @@ export function inside(box: Region, region: Region): boolean {
   const x = box.x + box.width / 2, y = box.y + box.height / 2;
   return x >= region.x && x <= region.x + region.width && y >= region.y && y <= region.y + region.height;
 }
-function contains(box: Region, r: Region): boolean {
+export function contains(box: Region, r: Region): boolean {
   const epsilon = 0.002;
   return box.x >= r.x - epsilon && box.y >= r.y - epsilon && box.x + box.width <= r.x + r.width + epsilon && box.y + box.height <= r.y + r.height + epsilon;
 }

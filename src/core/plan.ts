@@ -1,5 +1,5 @@
 import { fingerprint, validatePreset } from './preset';
-import { extractField, inside, normalizeText } from './text';
+import { buildLines, contains, extractField, inside, normalizeText } from './text';
 import type { Analysis, DocumentInfo, Overrides, PageText, Preset } from './types';
 
 const forbidden = /[<>:"/\\|?*\p{Cc}\p{Cf}]/gu;
@@ -7,15 +7,20 @@ const encoder = new TextEncoder();
 export function sanitizeFilename(value: string): { filename: string; changed: boolean } {
   const normalized = value.normalize('NFC');
   let base = normalized.replace(/\.pdf$/i, '').replace(forbidden, '_').replace(/\s+/gu, ' ').replace(/^[ .]+|[ .]+$/g, '');
-  if (/^(con|prn|aux|nul|com[0-9]|lpt[0-9])(?:\.|$)/i.test(base.normalize('NFKC'))) base = '_' + base;
   if (!base || base === '.' || base === '..') base = 'unnamed';
   while (encoder.encode(base + '.pdf').byteLength > 180) base = Array.from(base).slice(0, -1).join('');
   base = base.replace(/[ .]+$/g, '') || 'unnamed';
+  // Truncation and its final trim can reveal a reserved device name.
+  if (/^(con|prn|aux|nul|com[0-9]|lpt[0-9])(?:\.|$)/i.test(base.normalize('NFKC'))) {
+    base = '_' + base;
+    while (encoder.encode(base + '.pdf').byteLength > 180) base = Array.from(base).slice(0, -1).join('');
+    base = base.replace(/[ .]+$/g, '');
+  }
   const filename = base + '.pdf';
   return { filename, changed: filename !== normalized + (normalized.toLowerCase().endsWith('.pdf') ? '' : '.pdf') };
 }
 // NFKC plus case folding catches compatibility and common Windows/macOS aliases.
-export function collisionKey(filename: string): string { return filename.normalize('NFKC').toLocaleLowerCase('und').replace(/ß/g, 'ss').replace(/ς/g, 'σ'); }
+export function collisionKey(filename: string): string { return filename.normalize('NFKC').toLocaleLowerCase('und').replace(/ß/g, 'ss').replace(/ς/g, 'σ').normalize('NFKC'); }
 export function assertPartition(groups: number[][], count: number): void {
   const flattened = groups.flat();
   if (flattened.length !== count || flattened.some((page, index) => page !== index + 1)) throw new Error('Page coverage failed: every source page must appear exactly once, in source order.');
@@ -25,7 +30,14 @@ export function groupPages(pages: PageText[], preset: Preset): { groups: number[
   const marker = normalizeText(preset.grouping.marker);
   const starts: number[] = [], issues: string[] = [];
   for (const page of pages) {
-    const matches = page.lines.filter(line => inside(line.box, preset.grouping.region) && line.text === marker);
+    const region = preset.grouping.region;
+    // Restrict tokens first, so outside columns cannot conceal a report boundary.
+    const selected = page.tokens.filter(token => inside(token.box, region));
+    const clipped = page.tokens.some(({ box }) =>
+      box.x < region.x + region.width && box.x + box.width > region.x &&
+      box.y < region.y + region.height && box.y + box.height > region.y && !contains(box, region));
+    if (clipped) issues.push(`Page ${page.number}: marker region clips text. Expand or reposition it before exporting.`);
+    const matches = buildLines(selected).filter(line => line.text === marker);
     if (matches.length > 1) issues.push(`Page ${page.number}: multiple start markers inside the marker region.`);
     if (matches.length) starts.push(page.number);
   }
