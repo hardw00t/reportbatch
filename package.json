@@ -16,7 +16,8 @@
     "licenses": "node scripts/licenses.mjs",
     "predev": "node scripts/pdf-assets.mjs",
     "prebuild": "node scripts/pdf-assets.mjs && node scripts/licenses.mjs",
-    "serve": "node scripts/serve.mjs"
+    "serve": "node scripts/serve.mjs",
+    "package:offline": "npm run build && node scripts/package-offline.mjs"
   },
   "engines": {
     "node": ">=22.13.0"

@@ -95,3 +95,9 @@ Original code: [MIT](LICENSE). Pinned dependency/license metadata is in [docs/DE
 ### Important confidentiality limitation
 
 Splitting is not redaction or sanitization. The workbench rejects known article-thread, presentation-step and private application metadata structures, and checks for hidden Page objects outside each output's page tree. Shared resources, unused XObjects or private metadata can still contain non-visible content without extra Page objects. Do not rely on split PDFs as a confidentiality boundary for untrusted source documents. See [VM validation](docs/VM-VALIDATION.md) for current fixes, evidence and browser-test blockers.
+
+## Offline distribution
+
+`npm run package:offline` builds `release/reportbatch-offline.zip` plus an external SHA-256 file. The archive contains the complete static application, bundled PDF assets, license notices, a dependency-free loopback server, instructions and per-file integrity inventory. On a machine with Node.js 22.13+ already installed, extract it, run `node verify.mjs`, then `node serve.mjs`. No npm install is needed on the consuming machine. Keep the whole archive together; `file://` is unsupported.
+
+The package bytes are deterministic for identical built inputs. Integrity checks detect changes/missing/extra files; they do not authenticate the publisher. Obtain the ZIP and external checksum through the trusted release channel. Package generation/verification and loopback startup are tested; a network-disconnected browser workflow remains a separate gate, not a claim established by packaging.
