@@ -38,6 +38,12 @@ export function buildLines(tokens: Token[]): TextLine[] {
 }
 export function extractField(page: PageText, rule: FieldRule, manualValue?: string): FieldResult {
   const selected = page.tokens.filter(token => inside(token.box, rule.region));
+  // A partially intersecting token can have its center outside the region.
+  // Never silently drop that suffix and accept a truncated identifying value.
+  const clipped = page.tokens.some(({ box, text }) => text.trim() &&
+    box.x < rule.region.x + rule.region.width && box.x + box.width > rule.region.x &&
+    box.y < rule.region.y + rule.region.height && box.y + box.height > rule.region.y &&
+    !contains(box, rule.region));
   const lines = buildLines(selected);
   const prefix = normalizeText(rule.prefix);
   const candidates = rule.mode === 'prefix'
@@ -46,7 +52,7 @@ export function extractField(page: PageText, rule: FieldRule, manualValue?: stri
   let issue: string | undefined;
   if (!candidates.length || (candidates.length === 1 && !candidates[0])) issue = 'Missing value';
   else if (candidates.length > 1) issue = `Ambiguous: ${candidates.length} matching lines`;
-  else if (selected.some(token => !contains(token.box, rule.region))) issue = 'Region clips text; expand it or enter a verified value';
+  else if (clipped) issue = 'Region clips text; expand it or enter a verified value';
   const manual = manualValue !== undefined;
   const value = manual ? normalizeText(manualValue) : (issue ? '' : candidates[0]);
   if (manual) issue = value ? undefined : 'A verified value is required';

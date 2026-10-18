@@ -155,3 +155,19 @@ test('private application references reject and hidden direct or cyclic page gra
     assert.throws(()=>assertNoHiddenPages(reopened),/hidden page references/);
   }
 });
+
+test('real PDF partially intersecting surname blocks export instead of silently truncating', async () => {
+  const pdf=await PDFDocument.create(),page=pdf.addPage([1000,1000]);
+  const regular=await pdf.embedFont(StandardFonts.Helvetica),bold=await pdf.embedFont(StandardFonts.HelveticaBold);
+  page.drawText('Author: Alex',{x:100,y:850,size:20,font:regular});
+  page.drawText('Smith',{x:480,y:850,size:20,font:bold});
+  const source=await loadDocument(await pdf.save(),'synthetic-clipped-surname.pdf',open);
+  const p=structuredClone(DEFAULT_PRESET);
+  p.fields=[{key:'author',label:'Author',mode:'prefix',prefix:'Author:',region:{x:.05,y:.05,width:.45,height:.2}}];
+  p.filenameTemplate='{author}';
+  const analysis=await analyzeBatch(source.info,source.pages,p);
+  assert.ok(analysis.blockingCount>0);
+  assert.match(analysis.outputs[0].fields.author.issue!,/clips/);
+  assert.equal(analysis.outputs[0].fields.author.value,'');
+  await assert.rejects(exportBundle(source,p,{},analysis.id));
+});

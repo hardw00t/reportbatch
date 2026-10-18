@@ -121,3 +121,21 @@ test('filename truncation cannot reveal reserved devices and case-fold keys rema
   assert.equal(collisionKey('ǰ.pdf'),collisionKey('J\u030c.pdf'));
   assert.equal(collisionKey('ΐ.pdf'),collisionKey('Ι\u0308\u0301.pdf'));
 });
+
+test('field regions block intersecting suffix tokens whose centers are outside', () => {
+  const p=page(1,['Author: Alex']);
+  p.tokens[0].box={x:.1,y:.1,width:.11,height:.02};
+  p.tokens.push({...p.tokens[0],text:'Smith',box:{x:.48,y:.1,width:.06,height:.02},bx:288});
+  const rule={...preset().fields[1],region:{x:.05,y:.05,width:.45,height:.2}};
+  for(const mode of ['prefix','region'] as const){
+    const r={...rule,mode};
+    assert.match(extractField(p,r).issue!,/clips/);
+    assert.equal(extractField(p,r).value,'');
+    assert.equal(extractField(p,r,'Alex Smith').value,'Alex Smith');
+    assert.equal(extractField(p,r,'Alex Smith').issue,undefined);
+  }
+  p.tokens[1].box.x=.51; // Truly separate outside text is irrelevant.
+  assert.equal(extractField(p,rule).value,'Alex');
+  p.tokens[1].box={x:.49,y:.1,width:.011,height:.02}; // Preserve .002 tolerance.
+  assert.equal(extractField(p,rule).issue,undefined);
+});
