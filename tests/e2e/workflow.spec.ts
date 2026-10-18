@@ -55,7 +55,7 @@ test('sample tour exports verified PDFs, reopens the download, and preserves the
 test('marker boundaries preserve continuations; orphan and missing markers block export', async ({page}) => {
   await page.goto('/');await pdfInput(page).setInputFiles('public/samples/grouped-reports.pdf');
   await expect(page.getByText('6 searchable pages ·',{exact:false})).toBeVisible();
-  await page.getByRole('button',{name:'02 Split'}).click();await page.getByLabel('Report boundaries').selectOption('marker');
+  await page.getByRole('button',{name:'Split',exact:true}).click();await page.getByLabel('Report boundaries').selectOption('marker');
   await check(page);await expect(page.getByRole('row')).toHaveCount(4);
   await page.getByLabel('I reviewed every filename, page range and notice.').check();
   const wait=page.waitForEvent('download');await page.getByRole('button',{name:'Export verified ZIP'}).click();
@@ -145,7 +145,7 @@ test('cancel/retry and rapid double export never produce stale or partial downlo
 
 test('offline document processing has no network transmissions and no document persistence', async ({page,context}) => {
   const requests:{url:string;method:string;postData:string|null}[]=[];
-  page.on('request',request=>requests.push({url:request.url(),method:request.method(),postData:request.postData()}));
+  context.on('request',request=>requests.push({url:request.url(),method:request.method(),postData:request.postData()}));
   await sample(page);await check(page);
   // All application, worker, sample and font assets are now loaded. No server is needed for processing.
   await context.setOffline(true);await page.getByLabel('I reviewed every filename, page range and notice.').check();
@@ -166,6 +166,7 @@ test('keyboard path and automated accessibility scan cover empty, configured and
   const result=await new AxeBuilder({page}).withTags(['wcag2a','wcag2aa','wcag21a','wcag21aa']).analyze();expect(result.violations).toEqual([]);
   await page.getByLabel('I reviewed every filename, page range and notice.').focus();await page.keyboard.press('Space');
   await expect(page.getByRole('button',{name:'Export verified ZIP'})).toBeEnabled();
+  const wait=page.waitForEvent('download');await page.getByRole('button',{name:'Export verified ZIP'}).focus();await page.keyboard.press('Enter');await openDownload(await wait);
 });
 
 test('mobile layout, region drawing and imported numeric region controls stay usable', async ({page}) => {
@@ -176,6 +177,7 @@ test('mobile layout, region drawing and imported numeric region controls stay us
   await page.mouse.move(box!.x+box!.width*.05,box!.y+box!.height*.06);await page.mouse.down();await page.mouse.move(box!.x+box!.width*.95,box!.y+box!.height*.38,{steps:6});await page.mouse.up();
   await expect(page.getByLabel('Left %',{exact:true})).toHaveValue('5');await expect(page.getByLabel('Width %',{exact:true})).toHaveValue('90');
   await check(page);await page.screenshot({path:'docs/evidence/review-mobile.png',fullPage:true});
-  expect(await page.evaluate(()=>document.documentElement.scrollWidth<=window.innerWidth)).toBe(true);
+  const layout=await page.evaluate(()=>({width:innerWidth,scrollWidth:document.documentElement.scrollWidth,overflow:[...document.querySelectorAll('body *')].map(e=>({tag:e.tagName,class:e.className,right:e.getBoundingClientRect().right})).filter(e=>e.right>innerWidth+1)}));
+  expect(layout.scrollWidth,JSON.stringify(layout)).toBeLessThanOrEqual(layout.width);
   const violations=(await new AxeBuilder({page}).withTags(['wcag2a','wcag2aa']).analyze()).violations;expect(violations).toEqual([]);
 });
