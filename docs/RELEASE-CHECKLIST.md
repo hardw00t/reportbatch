@@ -1,6 +1,10 @@
 # Release evidence — private review build
 
-## Current VM status — 2026-10-18
+## Latest live verification — 2026-10-18 15:18 UTC
+
+Public synthetic test preview is deployed under owner authorization; source repository remains private. [Live browser QA](LIVE-BROWSER-QA.md) records passing correction alignment, required-field blocking, restored-value export, independently reopened PDF/hash/page checks, clear/reset, cancellation/recovery and limited keyboard smoke checks. Final Node suite is 31/31 passing with build/typecheck passing. Full browser suite, mobile, accessibility, network/privacy and browser performance gates remain incomplete. This is not production acceptance.
+
+## Earlier VM status — 2026-10-18
 
 **Not release ready; repository remains private.** Latest evidence: [VM validation](VM-VALIDATION.md). Mac results below are historical and do not validate subsequent source changes.
 
