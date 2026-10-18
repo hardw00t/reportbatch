@@ -1,0 +1,20 @@
+[
+  {
+    "archive": "clipping-fixed.zip",
+    "sha256": "eeaa07132f77b6184976554539954f24920c6ff621e9c0b40148d5b4dff3360f",
+    "bytes": 3039,
+    "outputs": 1,
+    "allHashesMatch": true,
+    "allPdfPagesReopened": true,
+    "exactOrderedSourcePartition": true
+  },
+  {
+    "archive": "500-recovery.zip",
+    "sha256": "2f85d5f3fd75594e0d88bae4e4ebb3f2c97f876918ae19a12b4d3e2fe16079aa",
+    "bytes": 1319962,
+    "outputs": 500,
+    "allHashesMatch": true,
+    "allPdfPagesReopened": true,
+    "exactOrderedSourcePartition": true
+  }
+]
