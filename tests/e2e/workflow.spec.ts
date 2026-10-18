@@ -1,7 +1,7 @@
 import { test, expect } from '@playwright/test';
 import type { Page, Download } from '@playwright/test';
 import AxeBuilder from '@axe-core/playwright';
-import { readFile, mkdir, writeFile } from 'node:fs/promises';
+import { readFile, readdir, mkdir, writeFile } from 'node:fs/promises';
 import { resolve } from 'node:path';
 import { PDFDocument } from 'pdf-lib';
 import { unzipSync, strFromU8 } from 'fflate';
@@ -143,21 +143,37 @@ test('cancel/retry and rapid double export never produce stale or partial downlo
   expect(downloads).toHaveLength(1);
 });
 
-test('offline document processing has no network transmissions and no document persistence', async ({page,context}) => {
+test('document processing requests only expected assets and has no automatic document persistence', async ({page,context}) => {
+  const allowedPaths=new Set(['/',...(await readdir('dist',{recursive:true})).map(path=>'/'+path.replaceAll('\\','/'))]);
+  const canaries=['PRIVATE-SOURCE-7821.pdf','PRIVATE-EXTRACTED-9137','PRIVATE-CORRECTION-4286'];
   const requests:{url:string;method:string;postData:string|null}[]=[];
   context.on('request',request=>requests.push({url:request.url(),method:request.method(),postData:request.postData()}));
-  await sample(page);await check(page);
+  await sample(page);
+  const bytes=await makeFixture([{...SAMPLE_REPORTS[0],author:canaries[1]}]);
+  await pdfInput(page).setInputFiles({name:canaries[0],mimeType:'application/pdf',buffer:Buffer.from(bytes)});
+  await expect(page.getByText('1 searchable pages ·',{exact:false})).toBeVisible();await check(page);
+  await page.getByLabel('Verified Author',{exact:true}).fill(canaries[2]);
+  await page.getByRole('button',{name:'Recheck corrections',exact:true}).click();
+  await expect(page.getByText('Page coverage checked',{exact:true})).toBeVisible();
   // All application, worker, sample and font assets are now loaded. No server is needed for processing.
   await context.setOffline(true);await page.getByLabel('I reviewed every filename, page range and notice.').check();
   const wait=page.waitForEvent('download');await page.getByRole('button',{name:'Export verified ZIP'}).click();await openDownload(await wait);
-  expect(requests.every(r=>new URL(r.url).origin==='http://127.0.0.1:4173' && r.method==='GET' && r.postData===null)).toBe(true);
+  expect(requests.every(r=>{const url=new URL(r.url);return url.origin==='http://127.0.0.1:4173' && allowedPaths.has(decodeURIComponent(url.pathname)) && url.search==='' && r.method==='GET' && r.postData===null;}),JSON.stringify(requests)).toBe(true);
+  for(const canary of canaries)expect(decodeURIComponent(JSON.stringify(requests))).not.toContain(canary);
   expect(await page.evaluate(()=>localStorage.length)).toBe(0);
   expect(await page.evaluate(async()=>({session:sessionStorage.length,databases:await indexedDB.databases(),caches:await caches.keys()}))).toEqual({session:0,databases:[],caches:[]});
   await context.setOffline(false);
+  await page.getByRole('button',{name:'Clear document from memory'}).click();
+  await expect(page.getByRole('button',{name:'Try the sample'})).toBeVisible();
+  expect(await page.evaluate(()=>localStorage.length+sessionStorage.length)).toBe(0);
 });
 
 test('keyboard path and automated accessibility scan cover empty, configured and review states', async ({page}) => {
   await page.goto('/');await page.keyboard.press('Tab');await expect(page.getByRole('link',{name:'Skip to workbench'})).toBeFocused();
+  await expect(page.getByLabel('Choose PDF batch')).toHaveAttribute('tabindex','-1');
+  await expect(page.getByLabel('Import layout preset')).toHaveAttribute('tabindex','-1');
+  await page.getByRole('button',{name:'Choose a PDF',exact:false}).focus();
+  await expect(page.getByRole('button',{name:'Choose a PDF',exact:false})).toBeFocused();
   expect((await new AxeBuilder({page}).withTags(['wcag2a','wcag2aa','wcag21a','wcag21aa']).analyze()).violations).toEqual([]);
   await sample(page);expect((await new AxeBuilder({page}).withTags(['wcag2a','wcag2aa','wcag21a','wcag21aa']).analyze()).violations).toEqual([]);
   const left=page.getByLabel('Left %',{exact:true});await left.focus();await page.keyboard.press('ArrowUp');await expect(left).toHaveValue('4.1');

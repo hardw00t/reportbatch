@@ -84,7 +84,7 @@ Synthetic fixtures are checked in. `npm run fixtures` regenerates the primary PD
 
 `npm run build` creates a self-contained `dist/` directory. Serve all of it, including `vendor/pdfjs` assets and notices, over HTTPS or localhost; opening `index.html` with `file://` is unsupported. `base: './'` supports a directory mount with a trailing slash. Apply the security headers in [scripts/serve.mjs](scripts/serve.mjs), disable access/body logging for documents (no upload route is needed), and do not add analytics. A remote static host would receive ordinary asset requests/IP metadata, so the default supported deployment is local loopback.
 
-No hosting, checkout, payment, accounts, remote CI or outreach is activated. [Commercial hypothesis](docs/COMMERCIAL-HYPOTHESIS.md) distinguishes observed workflow commissions from unvalidated demand for this product.
+An owner-authorized public synthetic preview is available for testing. Its host receives ordinary asset requests and connection metadata; deployed header enforcement remains a separate validation gate. The local loopback build remains the default supported mode. No checkout, payment, application accounts, remote CI or outreach is activated. [Commercial hypothesis](docs/COMMERCIAL-HYPOTHESIS.md) distinguishes observed workflow commissions from unvalidated demand for this product.
 
 ## Structure and license
 

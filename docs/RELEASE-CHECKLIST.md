@@ -1,6 +1,10 @@
 # Release evidence — private review build
 
-## Latest live verification — 2026-10-18 15:18 UTC
+## Latest local hardening — 2026-10-18 17:49 UTC
+
+Node checks are now **32/32 passing**, including executable local static-server security/privacy assertions. Production build/typecheck and new CSP/referrer build guard pass. Owner-authorized fresh npm audit returned zero advisories. Independent source privacy review found no application document-upload/automatic-persistence path; this is not runtime proof. Production-only CSP and invisible keyboard Tab stops were fixed, with stronger browser-network/canary regressions added. These changes still need live browser retest; automated Chromium continues to fail before assertions on local socket permissions. Public-host security headers, full mobile/a11y/import/privacy and browser-performance gates remain open. See [VM validation](VM-VALIDATION.md).
+
+## Earlier live verification — 2026-10-18 15:18 UTC
 
 Public synthetic test preview is deployed under owner authorization; source repository remains private. [Live browser QA](LIVE-BROWSER-QA.md) records passing correction alignment, required-field blocking, restored-value export, independently reopened PDF/hash/page checks, clear/reset, cancellation/recovery and limited keyboard smoke checks. Final Node suite is 31/31 passing with build/typecheck passing. Full browser suite, mobile, accessibility, network/privacy and browser performance gates remain incomplete. This is not production acceptance.
 
