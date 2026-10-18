@@ -30,3 +30,7 @@ After restoring the workspace, a bounded supported browser retry again returned 
 ## Deterministic property regressions
 
 Final `npm test`: **29 passed, zero failed**, including 2,500 seeded Unicode/path/device-name filename cases, 400 randomized exact-marker partitions/orphan cases, 100 deterministic planning/manual-correction identity cases, and nested preset allowlist/nonfinite geometry checks. Random seeds are fixed in `tests/property.test.ts`; no customer data or new testing dependency is used. These are bounded regressions rather than exhaustive proofs. RELEASE-CHECKLIST.md now distinguishes current VM results from historical Mac results.
+
+## Correction review synchronization — 2026-10-18
+
+Live preview QA reproduced a mismatch after selecting report 003, editing a correction and rechecking: the inspector reset to report 001 while the source preview remained on page 3. Recheck now preserves the selected report when present, synchronizes preview to its first page, and shows its table page. If changed grouping removes the selection, both inspector and preview fall back to the first output; a new document starts at its first output. Added two Node state regressions and a browser workflow covering valid and blank/blocked corrections. Final Node suite: **31/31 passed**; production build passed. Live browser regression on this new checkpoint remains pending republication/retest; previous environment-blocker notes above are historical, as separate public-preview QA is now operating under owner authorization. The GitHub repository remains private.

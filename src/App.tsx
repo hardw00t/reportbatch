@@ -4,6 +4,7 @@ import { PdfPreview, assetBase } from './PdfPreview';
 import { DEFAULT_PRESET, MAX_FILE_BYTES, MAX_PRESET_BYTES, parsePreset, serializePreset, validatePreset } from './core/preset';
 import { extractField } from './core/text';
 import { sanitizeFilename } from './core/plan';
+import { reviewSelection } from './review';
 import type { Analysis, DocumentInfo, Manifest, Overrides, PageText, Preset, Progress, Region } from './core/types';
 
 const PRESET_STORAGE = 'reportbatch.presets.v1';
@@ -135,7 +136,9 @@ export function App() {
       }
       const result = await engine.current.request<Analysis>('analyze', { preset: validated, overrides });
       if (token !== operation.current) return;
-      setAnalysis(result); setDirty(false); setReviewPage(0); setOnlyIssues(false); setSelectedOutput(result.outputs[0]?.id ?? 'p1');
+      const selection = reviewSelection(result.outputs, analysis ? selectedOutput : 'p1');
+      setAnalysis(result); setDirty(false); setOnlyIssues(false);
+      setSelectedOutput(selection.outputId); setPage(selection.sourcePage); setReviewPage(selection.tablePage);
       window.setTimeout(() => reviewHeading.current?.focus(), 0);
     } catch (error) { if (token === operation.current && (error as Error).name !== 'AbortError') setError((error as Error).message); }
     finally { if (token === operation.current) { operationActive.current = false; setBusy(null); setProgress(null); } }

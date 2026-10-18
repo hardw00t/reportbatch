@@ -201,3 +201,22 @@ test('delayed sample is latched and cancellation prevents late replacement of a 
   await expect(page.getByText('6 searchable pages ·',{exact:false})).toBeVisible();
   expect(requests).toBeLessThanOrEqual(1);
 });
+
+test('correction recheck keeps the inspector and source preview on the selected report', async ({page}) => {
+  await sample(page);await check(page);
+  await page.getByRole('button',{name:'Review 003',exact:true}).click();
+  await expect(page.getByLabel('Source page',{exact:true})).toHaveValue('3');
+  await page.getByLabel('Verified Author',{exact:true}).fill('Verified third report');
+  await page.getByRole('button',{name:'Recheck corrections',exact:true}).click();
+  await expect(page.getByText('Page coverage checked',{exact:true})).toBeVisible();
+  await expect(page.getByRole('complementary',{name:'Selected output corrections'})).toContainText('REPORT 003 · PAGES 3');
+  await expect(page.getByLabel('Verified Author',{exact:true})).toHaveValue('Verified third report');
+  await expect(page.getByLabel('Source page',{exact:true})).toHaveValue('3');
+  await expect(page.getByRole('img',{name:/PDF preview, source page 3/})).toBeVisible();
+  await page.getByLabel('Verified Author',{exact:true}).fill('');
+  await page.getByRole('button',{name:'Recheck corrections',exact:true}).click();
+  await expect(page.getByRole('complementary',{name:'Selected output corrections'})).toContainText('A verified value is required');
+  await expect(page.getByRole('complementary',{name:'Selected output corrections'})).toContainText('REPORT 003 · PAGES 3');
+  await expect(page.getByLabel('Source page',{exact:true})).toHaveValue('3');
+  await expect(page.getByRole('button',{name:'Export verified ZIP'})).toBeDisabled();
+});

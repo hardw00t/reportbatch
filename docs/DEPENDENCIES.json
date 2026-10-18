@@ -9,7 +9,7 @@
       "optional": false
     },
     {
-      "name": "@esbuild/darwin-arm64",
+      "name": "@esbuild/linux-x64",
       "version": "0.28.2",
       "license": "MIT",
       "development": true,
@@ -23,7 +23,7 @@
       "optional": true
     },
     {
-      "name": "@napi-rs/canvas-darwin-arm64",
+      "name": "@napi-rs/canvas-linux-x64-gnu",
       "version": "1.0.11",
       "license": "MIT",
       "development": false,
@@ -65,7 +65,7 @@
       "optional": false
     },
     {
-      "name": "@rolldown/binding-darwin-arm64",
+      "name": "@rolldown/binding-linux-x64-gnu",
       "version": "1.2.14",
       "license": "MIT",
       "development": true,
@@ -100,7 +100,7 @@
       "optional": false
     },
     {
-      "name": "@typescript/typescript-darwin-arm64",
+      "name": "@typescript/typescript-linux-x64",
       "version": "7.0.2",
       "license": "Apache-2.0",
       "development": true,
@@ -156,13 +156,6 @@
       "optional": false
     },
     {
-      "name": "fsevents",
-      "version": "2.3.3",
-      "license": "MIT",
-      "development": true,
-      "optional": true
-    },
-    {
       "name": "lightningcss",
       "version": "1.33.0",
       "license": "MPL-2.0",
@@ -170,7 +163,7 @@
       "optional": false
     },
     {
-      "name": "lightningcss-darwin-arm64",
+      "name": "lightningcss-linux-x64-gnu",
       "version": "1.33.0",
       "license": "MPL-2.0",
       "development": true,

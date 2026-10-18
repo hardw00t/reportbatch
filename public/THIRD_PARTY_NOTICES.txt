@@ -30,7 +30,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 
 
-===== @napi-rs/canvas-darwin-arm64 1.0.11 (MIT) =====
+===== @napi-rs/canvas-linux-x64-gnu 1.0.11 (MIT) =====
 See package source for full license text.
 
 ===== @pdf-lib/standard-fonts 1.0.0 (MIT) =====
