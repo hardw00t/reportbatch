@@ -1,0 +1,18 @@
+{
+  "date": "2026-10-18T09:34:17.538Z",
+  "scope": "Node-only engine benchmark; not browser performance or UI verification",
+  "node": "v24.19.0",
+  "platform": "linux",
+  "arch": "x64",
+  "cpu": "AMD EPYC 9V74 80-Core Processor",
+  "pages": 500,
+  "sourceBytes": 736917,
+  "archiveBytes": 1319962,
+  "loadMs": 1667,
+  "preflightMs": 17,
+  "exportMs": 1730,
+  "elapsedIncludingIndependentReopenMs": 3491,
+  "peakProcessRSSKiB": 670624,
+  "memoryMethod": "OS process high-water RSS via process.resourceUsage().maxRSS; includes fixture generation and Node parser, excludes browser and worker topology",
+  "verification": "500 output PDFs independently reopened from ZIP, one page each; ordered source partition 1..500 verified; engine export also verifies hashes and hidden-page graph"
+}

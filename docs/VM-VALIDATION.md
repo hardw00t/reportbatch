@@ -20,3 +20,9 @@ Browser tests did not execute application assertions on this VM: Chromium startu
 - Full Node suite: **25 passed, zero failed**. Production typecheck/build passed. This is not a guarantee that PDFs contain only visible report content: shared resources, unused XObjects and private metadata may contain non-visible content without extra Page dictionaries. This tool is not a redaction or sanitization service. Do not use split output as a confidentiality boundary for untrusted documents.
 - Sample fetching and preset reading now use an immediate operation latch and generation checks. Cancellation aborts an outstanding sample request. Added delayed-sample/double-click/cancel regression to the browser suite; **not run due to the recorded browser environment blocker**. These UI fixes are typechecked, not browser-validated.
 - `PW_EXECUTABLE_PATH` optionally selects an installed Chromium binary for test environments; it does not change browser/system settings.
+
+## Node-only 500-report measurement
+
+`node --import tsx scripts/benchmark-node.ts` completed on Linux x64 / Node 24.19.0: load 1,667 ms, preflight 17 ms, export 1,730 ms, total including independent PDF reopening 3,491 ms. All 500 PDFs reopened with one page each and source partition 1–500 verified. Peak Node-process RSS was 670,624 KiB (includes fixture generation). [Machine-readable evidence](evidence/performance-node-500.json). This synthetic Node result does not establish browser memory/performance, customer-file behavior, visual equivalence or a general service-level guarantee.
+
+After restoring the workspace, a bounded supported browser retry again returned connection refused even though the server readiness probe in its own execution session returned HTTP 200 and expected security headers. The temporary server was stopped. Browser validation remains blocked.
