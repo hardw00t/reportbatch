@@ -1,0 +1,188 @@
+{
+  "schemaVersion": 1,
+  "application": "ReportBatch",
+  "applicationVersion": "0.1.0",
+  "analysisId": "4ab544aef69de73f9b3630a1e7667b67fb89f2f025e8e64b683c5314e21c3129",
+  "source": {
+    "name": "grouped-reports.pdf",
+    "byteLength": 9270,
+    "pageCount": 6,
+    "sha256": "185207190218315ddcb068989ac2f7d9606711b53b8c3f95a3fa2453fcbc8393"
+  },
+  "preset": {
+    "schemaVersion": 1,
+    "name": "Report headers",
+    "fields": [
+      {
+        "key": "date",
+        "label": "Date",
+        "mode": "prefix",
+        "prefix": "Date:",
+        "region": {
+          "x": 0.04,
+          "y": 0.04,
+          "width": 0.92,
+          "height": 0.36
+        }
+      },
+      {
+        "key": "author",
+        "label": "Author",
+        "mode": "prefix",
+        "prefix": "Author:",
+        "region": {
+          "x": 0.04,
+          "y": 0.04,
+          "width": 0.92,
+          "height": 0.36
+        }
+      },
+      {
+        "key": "type",
+        "label": "Report type",
+        "mode": "prefix",
+        "prefix": "Type:",
+        "region": {
+          "x": 0.04,
+          "y": 0.04,
+          "width": 0.92,
+          "height": 0.36
+        }
+      }
+    ],
+    "grouping": {
+      "mode": "marker",
+      "marker": "REPORT START",
+      "region": {
+        "x": 0.04,
+        "y": 0.02,
+        "width": 0.92,
+        "height": 0.15
+      }
+    },
+    "filenameTemplate": "{date}_{author}_{type}"
+  },
+  "outputs": [
+    {
+      "filename": "2026-10-12_Alex Morgan_Site visit.pdf",
+      "sourcePages": [
+        1,
+        2
+      ],
+      "pageCount": 2,
+      "sha256": "cef12111abf89d729924686c9ed7a12dbf2a61d5d542688b4c9db9559942af32",
+      "fields": {
+        "date": {
+          "value": "2026-10-12",
+          "candidates": [
+            "2026-10-12"
+          ],
+          "manual": false,
+          "sourcePage": 1
+        },
+        "author": {
+          "value": "Alex Morgan",
+          "candidates": [
+            "Alex Morgan"
+          ],
+          "manual": false,
+          "sourcePage": 1
+        },
+        "type": {
+          "value": "Site visit",
+          "candidates": [
+            "Site visit"
+          ],
+          "manual": false,
+          "sourcePage": 1
+        }
+      },
+      "notices": []
+    },
+    {
+      "filename": "2026-10-13_Casey Reed_Inspection.pdf",
+      "sourcePages": [
+        3
+      ],
+      "pageCount": 1,
+      "sha256": "5387973ec609d788c00154c8f489e7214c15c0517a1018e31d7bbcedfaba61bc",
+      "fields": {
+        "date": {
+          "value": "2026-10-13",
+          "candidates": [
+            "2026-10-13"
+          ],
+          "manual": false,
+          "sourcePage": 3
+        },
+        "author": {
+          "value": "Casey Reed",
+          "candidates": [
+            "Casey Reed"
+          ],
+          "manual": false,
+          "sourcePage": 3
+        },
+        "type": {
+          "value": "Inspection",
+          "candidates": [
+            "Inspection"
+          ],
+          "manual": false,
+          "sourcePage": 3
+        }
+      },
+      "notices": []
+    },
+    {
+      "filename": "12_10_2026_Zoë Martin_Survey.pdf",
+      "sourcePages": [
+        4,
+        5,
+        6
+      ],
+      "pageCount": 3,
+      "sha256": "82af27c0236fd142bd30ff151c3a372c6f6cc4ea127520d1c56e62f8f6b219c3",
+      "fields": {
+        "date": {
+          "value": "12/10/2026",
+          "candidates": [
+            "12/10/2026"
+          ],
+          "manual": false,
+          "sourcePage": 4
+        },
+        "author": {
+          "value": "Zoë Martin",
+          "candidates": [
+            "Zoë Martin"
+          ],
+          "manual": false,
+          "sourcePage": 4
+        },
+        "type": {
+          "value": "Survey",
+          "candidates": [
+            "Survey"
+          ],
+          "manual": false,
+          "sourcePage": 4
+        }
+      },
+      "notices": [
+        "Unsafe filename characters were replaced or the name was shortened. Review the final name."
+      ]
+    }
+  ],
+  "verification": {
+    "pagePartition": true,
+    "pdfsReopened": true,
+    "zipReopened": true,
+    "totalOutputPages": 6
+  },
+  "limitations": [
+    "Field values are literal extracted text or explicit manual corrections; dates and identities are not inferred.",
+    "Page counts and geometry were verified. The operator must review content and grouping. No semantic accuracy guarantee.",
+    "Bookmarks, document metadata and document-level structure are not preserved. Forms, signatures, annotations, attachments, layers and actions are unsupported."
+  ]
+}

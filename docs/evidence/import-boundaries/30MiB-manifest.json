@@ -1,0 +1,113 @@
+{
+  "schemaVersion": 1,
+  "application": "ReportBatch",
+  "applicationVersion": "0.1.0",
+  "analysisId": "6ffe765d7395bac8596da821d4570398d0aa536859e24e466831050cb0eebd3b",
+  "source": {
+    "name": "30-MiB-synthetic.pdf",
+    "byteLength": 31457280,
+    "pageCount": 1,
+    "sha256": "398db142c102127980d46e62201ed8ca6a78587b0a28116ac0b9cb1b94d61beb"
+  },
+  "preset": {
+    "schemaVersion": 1,
+    "name": "Report headers",
+    "fields": [
+      {
+        "key": "date",
+        "label": "Date",
+        "mode": "prefix",
+        "prefix": "Date:",
+        "region": {
+          "x": 0.04,
+          "y": 0.04,
+          "width": 0.92,
+          "height": 0.36
+        }
+      },
+      {
+        "key": "author",
+        "label": "Author",
+        "mode": "prefix",
+        "prefix": "Author:",
+        "region": {
+          "x": 0.04,
+          "y": 0.04,
+          "width": 0.92,
+          "height": 0.36
+        }
+      },
+      {
+        "key": "type",
+        "label": "Report type",
+        "mode": "prefix",
+        "prefix": "Type:",
+        "region": {
+          "x": 0.04,
+          "y": 0.04,
+          "width": 0.92,
+          "height": 0.36
+        }
+      }
+    ],
+    "grouping": {
+      "mode": "page",
+      "marker": "REPORT START",
+      "region": {
+        "x": 0.04,
+        "y": 0.02,
+        "width": 0.92,
+        "height": 0.15
+      }
+    },
+    "filenameTemplate": "{date}_{author}_{type}"
+  },
+  "outputs": [
+    {
+      "filename": "2026-10-12_Alex Morgan_Site visit.pdf",
+      "sourcePages": [
+        1
+      ],
+      "pageCount": 1,
+      "sha256": "7229e5e825ee51648813ee3ba48eacd72c27902d25c4deb336f31480becd6b51",
+      "fields": {
+        "date": {
+          "value": "2026-10-12",
+          "candidates": [
+            "2026-10-12"
+          ],
+          "manual": false,
+          "sourcePage": 1
+        },
+        "author": {
+          "value": "Alex Morgan",
+          "candidates": [
+            "Alex Morgan"
+          ],
+          "manual": false,
+          "sourcePage": 1
+        },
+        "type": {
+          "value": "Site visit",
+          "candidates": [
+            "Site visit"
+          ],
+          "manual": false,
+          "sourcePage": 1
+        }
+      },
+      "notices": []
+    }
+  ],
+  "verification": {
+    "pagePartition": true,
+    "pdfsReopened": true,
+    "zipReopened": true,
+    "totalOutputPages": 1
+  },
+  "limitations": [
+    "Field values are literal extracted text or explicit manual corrections; dates and identities are not inferred.",
+    "Page counts and geometry were verified. The operator must review content and grouping. No semantic accuracy guarantee.",
+    "Bookmarks, document metadata and document-level structure are not preserved. Forms, signatures, annotations, attachments, layers and actions are unsupported."
+  ]
+}

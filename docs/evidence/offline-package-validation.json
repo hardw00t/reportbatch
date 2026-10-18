@@ -1,9 +1,11 @@
 {
   "date": "2026-10-18",
-  "tests": "33 Node tests passed; production build and CSP guard passed",
-  "archiveSha256": "bbc17691963c36d7c4b70b2ccaba22a5331d6e5e408ed78989855fdf208bf2bc",
-  "archiveBytes": 3307563,
+  "tests": "35 Node tests passed; production build/CSP guard and offline package passed after clipping fix",
+  "archiveSha256": "0dd2b644d744351ba984f6bcb31a4e33192638d19a9a239505a978c91ccb43f7",
+  "archiveBytes": 3307684,
   "inventoryFiles": 213,
   "verification": "Actual archive extracted to fresh temporary directory without node_modules; node verify.mjs passed; node serve.mjs returned HTTP200 and production CSP. Automated synthetic package test proved repeated ZIP bytes identical and rejects unexpected files and modified content.",
-  "notVerified": "Network-disconnected browser workflow, browser font/codec use for all documents, final release acceptance. No external network block or browser security bypass was performed."
+  "notVerified": "Network-disconnected browser workflow, browser font/codec use for all documents, final release acceptance. No external network block or browser security bypass was performed.",
+  "sourceCommit": "4dcb2b36efbd993edd2a8c4524fc1a88edc37e30",
+  "sourceTree": "ce55a7839c5f2b1cd636682fd72e37c9f55453d3"
 }

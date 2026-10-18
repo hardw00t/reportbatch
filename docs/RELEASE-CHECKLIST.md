@@ -1,5 +1,14 @@
 # Release evidence — private review build
 
+## Latest import/boundary acceptance — 2026-10-18 18:46 UTC
+
+35 Node tests and production build pass (offline packaging previously validated with33tests). A new identifying-field clipping defect was fixed: a surname intersecting the region with its center outside is now blocked rather than silently omitted. Unit and real-PDF export-blocking regressions pass; updated live browser retest is required. Live synthetic imports, preset round-trip/rejection, grouped6page/3output export,500report export, exact30MiB export,501page/+1byte rejection, Unicode export and unsupported-file recovery pass on deployed index-Vpo0mRBu.js. All505 downloaded PDFs independently reopen with matching hashes/counts and ordered source partitions.500report import-to-download24.929s includes review/tool time; browser memory unmeasured. See [import evidence](IMPORT-BOUNDARY-QA.md).
+
+Additional live evidence: rotated/cropped export with adjusted numeric regions preserves geometry and pixel-identical Poppler rendering; native200%/400% zoom has no document horizontal overflow (local table scrolling remains). See [rotation and zoom](ROTATION-ZOOM-QA.md).
+
+Still open: runtime network/storage/host-header observation (native DevTools explicitly blocked by organization; no bypass), browser memory, full accessibility/mobile/zoom, mixed-size export visual fidelity, disconnected-browser workflow and final acceptance. Source privacy review and local server tests do not close runtime gates. No new production-readiness claim.
+
+
 ## Latest acceptance evidence — 2026-10-18 17:52 UTC
 
 **Still not production-ready.** Private source remains private; public synthetic preview version 3 is authorized testing only. Source `09f8324`, directly observed browser asset `index-Vpo0mRBu.js`.

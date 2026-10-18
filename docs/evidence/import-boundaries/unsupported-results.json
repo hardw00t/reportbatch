@@ -1,0 +1,34 @@
+[
+  {
+    "fixture": "corrupt",
+    "result": "We couldn’t complete that.\n    - generic: This PDF could not be parsed safely. Its page tree is malformed. Export a fresh copy from its source.\n    - button \"Dismiss error\":\n  - button \"Choose PDF batch\"\n  - button \"Import layout preset\"\n  - region \"Start a batch\":\n    - heading \"Your reports, in good order.\" [level=2]\n    - paragraph:\n      - text: Drop a searchable PDF here.\n      - text: We’ll "
+  },
+  {
+    "fixture": "scan",
+    "result": "We couldn’t complete that.\n    - generic: Page 1 has no usable searchable text. Scans and blank pages are unsupported. Run OCR outside ReportBatch or use a searchable source; no pages were exported.\n    - button \"Dismiss error\":\n  - button \"Choose PDF batch\"\n  - button \"Import layout preset\"\n  - region \"Start a batch\":\n    - heading \"Your reports, in good order.\" [level=2]\n    - paragraph:\n      -"
+  },
+  {
+    "fixture": "form",
+    "result": "We couldn’t complete that.\n    - generic: Forms, signatures, portfolios, layers and document actions are unsupported. Export a flat, searchable PDF first; signatures will not carry over.\n    - button \"Dismiss error\":\n  - button \"Choose PDF batch\"\n  - button \"Import layout preset\"\n  - region \"Start a batch\":\n    - heading \"Your reports, in good order.\" [level=2]\n    - paragraph:\n      - text: Drop "
+  },
+  {
+    "fixture": "attachment",
+    "result": "We couldn’t complete that.\n    - generic: PDF attachments are unsupported. Use a clean, flat searchable PDF.\n    - button \"Dismiss error\":\n  - button \"Choose PDF batch\"\n  - button \"Import layout preset\"\n  - region \"Start a batch\":\n    - heading \"Your reports, in good order.\" [level=2]\n    - paragraph:\n      - text: Drop a searchable PDF here.\n      - text: We’ll check every page before you export."
+  },
+  {
+    "fixture": "action",
+    "result": "We couldn’t complete that.\n    - generic: Forms, signatures, portfolios, layers and document actions are unsupported. Export a flat, searchable PDF first; signatures will not carry over.\n    - button \"Dismiss error\":\n  - button \"Choose PDF batch\"\n  - button \"Import layout preset\"\n  - region \"Start a batch\":\n    - heading \"Your reports, in good order.\" [level=2]\n    - paragraph:\n      - text: Drop "
+  },
+  {
+    "fixture": "annotation",
+    "result": "We couldn’t complete that.\n    - generic: Page 1 has annotations, form fields, actions, article threads, private application data or attachments. Export a flat searchable copy first.\n    - button \"Dismiss error\":\n  - button \"Choose PDF batch\"\n  - button \"Import layout preset\"\n  - region \"Start a batch\":\n    - heading \"Your reports, in good order.\" [level=2]\n    - paragraph:\n      - text: Drop a se"
+  },
+  {
+    "fixture": "signature",
+    "result": "We couldn’t complete that.\n    - generic: Forms, signatures, portfolios, layers and document actions are unsupported. Export a flat, searchable PDF first; signatures will not carry over.\n    - button \"Dismiss error\":\n  - button \"Choose PDF batch\"\n  - button \"Import layout preset\"\n  - region \"Start a batch\":\n    - heading \"Your reports, in good order.\" [level=2]\n    - paragraph:\n      - text: Drop "
+  },
+  {
+    "fixture": "layer",
+    "result": "We couldn’t complete that.\n    - generic: Forms, signatures, portfolios, layers and document actions are unsupported. Export a flat, searchable PDF first; signatures will not carry over.\n    - button \"Dismiss error\":\n  - button \"Choose PDF batch\"\n  - button \"Import layout preset\"\n  - region \"Start a batch\":\n    - heading \"Your reports, in good order.\" [level=2]\n    - paragraph:\n      - text: Drop "
+  }
+]

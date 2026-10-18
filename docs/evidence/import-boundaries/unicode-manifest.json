@@ -1,0 +1,115 @@
+{
+  "schemaVersion": 1,
+  "application": "ReportBatch",
+  "applicationVersion": "0.1.0",
+  "analysisId": "36107fd8290facde40dfeb84c972371d0c47588a1d2a44bfb1571e43399a2bcf",
+  "source": {
+    "name": "unicode.pdf",
+    "byteLength": 12672,
+    "pageCount": 1,
+    "sha256": "10ba467a40a08d9722d1f3420a67808dbd3ae327744ab5048da97270f7bb6eb5"
+  },
+  "preset": {
+    "schemaVersion": 1,
+    "name": "Report headers",
+    "fields": [
+      {
+        "key": "date",
+        "label": "Date",
+        "mode": "prefix",
+        "prefix": "Date:",
+        "region": {
+          "x": 0.04,
+          "y": 0.04,
+          "width": 0.92,
+          "height": 0.36
+        }
+      },
+      {
+        "key": "author",
+        "label": "Author",
+        "mode": "prefix",
+        "prefix": "Author:",
+        "region": {
+          "x": 0.04,
+          "y": 0.04,
+          "width": 0.92,
+          "height": 0.36
+        }
+      },
+      {
+        "key": "type",
+        "label": "Report type",
+        "mode": "prefix",
+        "prefix": "Type:",
+        "region": {
+          "x": 0.04,
+          "y": 0.04,
+          "width": 0.92,
+          "height": 0.36
+        }
+      }
+    ],
+    "grouping": {
+      "mode": "page",
+      "marker": "REPORT START",
+      "region": {
+        "x": 0.04,
+        "y": 0.02,
+        "width": 0.92,
+        "height": 0.15
+      }
+    },
+    "filenameTemplate": "{date}_{author}_{type}"
+  },
+  "outputs": [
+    {
+      "filename": "03_04_2026_Zoë García — Αλεξάνδρα_Résumé.pdf",
+      "sourcePages": [
+        1
+      ],
+      "pageCount": 1,
+      "sha256": "33ce956ab8950af183efd1e63ae249f50555e79612caed3db04e4775ca1c69ca",
+      "fields": {
+        "date": {
+          "value": "03/04/2026",
+          "candidates": [
+            "03/04/2026"
+          ],
+          "manual": false,
+          "sourcePage": 1
+        },
+        "author": {
+          "value": "Zoë García — Αλεξάνδρα",
+          "candidates": [
+            "Zoë García — Αλεξάνδρα"
+          ],
+          "manual": false,
+          "sourcePage": 1
+        },
+        "type": {
+          "value": "Résumé",
+          "candidates": [
+            "Résumé"
+          ],
+          "manual": false,
+          "sourcePage": 1
+        }
+      },
+      "notices": [
+        "Unsafe filename characters were replaced or the name was shortened. Review the final name."
+      ]
+    }
+  ],
+  "verification": {
+    "pagePartition": true,
+    "pdfsReopened": true,
+    "zipReopened": true,
+    "totalOutputPages": 1
+  },
+  "limitations": [
+    "Field values are literal extracted text or explicit manual corrections; dates and identities are not inferred.",
+    "Page counts and geometry were verified. The operator must review content and grouping. No semantic accuracy guarantee.",
+    "Bookmarks, document metadata and document-level structure are not preserved. Forms, signatures, annotations, attachments, layers and actions are unsupported."
+  ]
+}

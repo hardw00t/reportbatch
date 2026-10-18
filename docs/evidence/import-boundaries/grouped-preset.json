@@ -1,0 +1,53 @@
+{
+  "schemaVersion": 1,
+  "name": "Report headers",
+  "fields": [
+    {
+      "key": "date",
+      "label": "Date",
+      "mode": "prefix",
+      "prefix": "Date:",
+      "region": {
+        "x": 0.04,
+        "y": 0.04,
+        "width": 0.92,
+        "height": 0.36
+      }
+    },
+    {
+      "key": "author",
+      "label": "Author",
+      "mode": "prefix",
+      "prefix": "Author:",
+      "region": {
+        "x": 0.04,
+        "y": 0.04,
+        "width": 0.92,
+        "height": 0.36
+      }
+    },
+    {
+      "key": "type",
+      "label": "Report type",
+      "mode": "prefix",
+      "prefix": "Type:",
+      "region": {
+        "x": 0.04,
+        "y": 0.04,
+        "width": 0.92,
+        "height": 0.36
+      }
+    }
+  ],
+  "grouping": {
+    "mode": "marker",
+    "marker": "REPORT START",
+    "region": {
+      "x": 0.04,
+      "y": 0.02,
+      "width": 0.92,
+      "height": 0.15
+    }
+  },
+  "filenameTemplate": "{date}_{author}_{type}"
+}

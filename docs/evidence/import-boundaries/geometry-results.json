@@ -1,0 +1,14 @@
+[
+  {
+    "fixture": "rotated-cropped",
+    "table": "Report\tSource pages\tFilename\tCheck\nReview 001\t1\t\n__.pdf\n\tBlocked"
+  },
+  {
+    "fixture": "mixed-sizes",
+    "table": "Report\tSource pages\tFilename\tCheck\nReview 001\t1\t\n2026-10-12_Alex Morgan_Site visit.pdf\n\tReady\nReview 002\t2\t\n2026-10-13_Casey Reed_Inspection.pdf\n\tReady\nReview 003\t3\t\n12_10_2026_Zoë Martin_Survey.pdf\n\tReview\nReview 004\t4\t\n2026-10-15_Jordan Lee_Progress.pdf\n\tReady"
+  },
+  {
+    "fixture": "unicode",
+    "table": "Report\tSource pages\tFilename\tCheck\nReview 001\t1\t\n03_04_2026_Zoë García — Αλεξάνδρα_Résumé.pdf\n\tReview"
+  }
+]

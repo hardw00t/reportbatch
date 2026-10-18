@@ -1,0 +1,34 @@
+[
+  {
+    "archive": "grouped.zip",
+    "sha256": "b63588545d06aea10cad4dcd41907fd0de6078ba21c51a6eddf8b4e479e7ad01",
+    "bytes": 12490,
+    "outputs": 3,
+    "pages": 6,
+    "verification": "All PDFs independently reopened with pdfinfo; page counts, unique filenames, hashes and ordered source partition checked."
+  },
+  {
+    "archive": "500.zip",
+    "sha256": "2f85d5f3fd75594e0d88bae4e4ebb3f2c97f876918ae19a12b4d3e2fe16079aa",
+    "bytes": 1319962,
+    "outputs": 500,
+    "pages": 500,
+    "verification": "All PDFs independently reopened with pdfinfo; page counts, unique filenames, hashes and ordered source partition checked."
+  },
+  {
+    "archive": "30MiB.zip",
+    "sha256": "5138bc3126da286453753374503af1ead6f0e6a1366f4585d17b42291d3f89ab",
+    "bytes": 31459332,
+    "outputs": 1,
+    "pages": 1,
+    "verification": "All PDFs independently reopened with pdfinfo; page counts, unique filenames, hashes and ordered source partition checked."
+  },
+  {
+    "archive": "unicode.zip",
+    "sha256": "5ba6e1a9c4deb8dcd9db51a974db74d97b02619a94a4476799dfcc821d89f434",
+    "bytes": 14543,
+    "outputs": 1,
+    "pages": 1,
+    "verification": "All PDFs independently reopened with pdfinfo; page counts, unique filenames, hashes and ordered source partition checked."
+  }
+]
