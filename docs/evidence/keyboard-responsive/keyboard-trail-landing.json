@@ -1,0 +1,167 @@
+[
+  {
+    "name": "Import layout preset",
+    "outline": "rgb(188, 109, 46) solid 3px",
+    "rect": {
+      "bottom": 1,
+      "height": 2,
+      "left": -1,
+      "right": 1,
+      "top": -1,
+      "width": 2,
+      "x": -1,
+      "y": -1
+    },
+    "tag": "INPUT"
+  },
+  {
+    "name": "Choose a PDF",
+    "outline": "rgb(188, 109, 46) solid 3px",
+    "rect": {
+      "bottom": 607.8125,
+      "height": 42,
+      "left": 168.8125,
+      "right": 316.171875,
+      "top": 565.8125,
+      "width": 147.359375,
+      "x": 168.8125,
+      "y": 565.8125
+    },
+    "tag": "BUTTON"
+  },
+  {
+    "name": "Try the sample",
+    "outline": "rgb(188, 109, 46) solid 3px",
+    "rect": {
+      "bottom": 399.140625,
+      "height": 37,
+      "left": 336.96875,
+      "right": 449,
+      "top": 362.140625,
+      "width": 112.03125,
+      "x": 336.96875,
+      "y": 362.140625
+    },
+    "tag": "BUTTON"
+  },
+  {
+    "name": "01 · Get a good first export",
+    "outline": "rgb(188, 109, 46) solid 3px",
+    "rect": {
+      "bottom": 700.1875,
+      "height": 48,
+      "left": 17,
+      "right": 468,
+      "top": 652.1875,
+      "width": 451,
+      "x": 17,
+      "y": 652.1875
+    },
+    "tag": "SUMMARY"
+  },
+  {
+    "name": "02 · Teach the layout your fields",
+    "outline": "rgb(188, 109, 46) solid 3px",
+    "rect": {
+      "bottom": 749.1875,
+      "height": 48,
+      "left": 17,
+      "right": 468,
+      "top": 701.1875,
+      "width": 451,
+      "x": 17,
+      "y": 701.1875
+    },
+    "tag": "SUMMARY"
+  },
+  {
+    "name": "03 · Keep every page in its report",
+    "outline": "rgb(188, 109, 46) solid 3px",
+    "rect": {
+      "bottom": 761.1875,
+      "height": 48,
+      "left": 17,
+      "right": 468,
+      "top": 713.1875,
+      "width": 451,
+      "x": 17,
+      "y": 713.1875
+    },
+    "tag": "SUMMARY"
+  },
+  {
+    "name": "04 · Understand the boundaries",
+    "outline": "rgb(188, 109, 46) solid 3px",
+    "rect": {
+      "bottom": 597.1875,
+      "height": 48,
+      "left": 17,
+      "right": 468,
+      "top": 549.1875,
+      "width": 451,
+      "x": 17,
+      "y": 549.1875
+    },
+    "tag": "SUMMARY"
+  },
+  {
+    "name": "Privacy, recovery & saved layouts",
+    "outline": "rgb(188, 109, 46) solid 3px",
+    "rect": {
+      "bottom": 646.1875,
+      "height": 48,
+      "left": 17,
+      "right": 468,
+      "top": 598.1875,
+      "width": 451,
+      "x": 17,
+      "y": 598.1875
+    },
+    "tag": "SUMMARY"
+  },
+  {
+    "name": "ReportBatchLocal edition · v0.1.0",
+    "outline": "rgb(188, 109, 46) solid 3px",
+    "rect": {
+      "bottom": 730.1875,
+      "height": 18,
+      "left": 17,
+      "right": 175.046875,
+      "top": 712.1875,
+      "width": 158.046875,
+      "x": 17,
+      "y": 712.1875
+    },
+    "tag": "A"
+  },
+  {
+    "name": "Skip to workbenchReportBatch LOCAL EDITIONDocuments stay on your deviceQuick guide ↗THE RE",
+    "outline": "rgb(36, 59, 53) none 3px",
+    "rect": {
+      "bottom": 761.1875,
+      "height": 1663.1875,
+      "left": 0,
+      "right": 485,
+      "top": -902,
+      "width": 485,
+      "x": 0,
+      "y": -902
+    },
+    "tag": "BODY"
+  },
+  {
+    "name": "Skip to workbench",
+    "outline": "rgb(188, 109, 46) solid 3px",
+    "rect": {
+      "bottom": 57,
+      "height": 45,
+      "left": 16,
+      "right": 154.40625,
+      "top": 12,
+      "width": 138.40625,
+      "x": 16,
+      "y": 12
+    },
+    "tag": "A"
+  }
+]

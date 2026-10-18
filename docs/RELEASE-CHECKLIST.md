@@ -1,5 +1,16 @@
 # Release evidence — private review build
 
+## Latest acceptance evidence — 2026-10-18 17:52 UTC
+
+**Still not production-ready.** Private source remains private; public synthetic preview version 3 is authorized testing only. Source `09f8324`, directly observed browser asset `index-Vpo0mRBu.js`.
+
+- PASS: 32 Node tests, production build/typecheck/CSP guard, owner-authorized dependency audit with zero advisories.
+- PASS on the new live preview: invisible file-input Tab stops removed; visible upload/sample buttons remain reachable; keyboard sample → preflight → review → actual ZIP export succeeds. Four downloaded PDFs independently reopen with matching hashes, page counts and ordered source partition.
+- PASS, bounded: 485–500 px native desktop-window reflow/no overflow, 42-stop keyboard traversal without a trap, limited text contrast sample. **Not mobile-device validation or accessibility certification.**
+- OPEN: supported preset/PDF import tests; full automated browser suite and axe/screen-reader checks; mobile/touch/320–375 px and zoom reflow; full request/storage canary validation and public-host header verification; large-fixture browser timing/memory/cancellation; broader browsers and visual fidelity. Prior aborted import must not be retried without renewed approval.
+- NEXT: follow [remaining validation checklist](NEXT-VALIDATION.md). Do not substitute Node benchmarks or source inspection for the browser gates.
+
+
 ## Latest local hardening — 2026-10-18 17:49 UTC
 
 Node checks are now **32/32 passing**, including executable local static-server security/privacy assertions. Production build/typecheck and new CSP/referrer build guard pass. Owner-authorized fresh npm audit returned zero advisories. Independent source privacy review found no application document-upload/automatic-persistence path; this is not runtime proof. Production-only CSP and invisible keyboard Tab stops were fixed, with stronger browser-network/canary regressions added. These changes still need live browser retest; automated Chromium continues to fail before assertions on local socket permissions. Public-host security headers, full mobile/a11y/import/privacy and browser-performance gates remain open. See [VM validation](VM-VALIDATION.md).
