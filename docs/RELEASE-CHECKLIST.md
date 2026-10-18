@@ -1,4 +1,6 @@
-# Release evidence — private review build
+# Release evidence — release candidate
+
+Source publication is authorized. This is not production acceptance. Mixed-size export now passes all four page geometry/hash/pixel-equality checks; see [mixed-size evidence](MIXED-SIZE-QA.md). Older private-build labels below describe historical checkpoints.
 
 ## Latest import/boundary acceptance — 2026-10-18 18:46 UTC
 
@@ -6,7 +8,7 @@
 
 Additional live evidence: rotated/cropped export with adjusted numeric regions preserves geometry and pixel-identical Poppler rendering; native200%/400% zoom has no document horizontal overflow (local table scrolling remains). See [rotation and zoom](ROTATION-ZOOM-QA.md).
 
-Still open: runtime network/storage/host-header observation (native DevTools explicitly blocked by organization; no bypass), browser memory, full accessibility/mobile/zoom, mixed-size export visual fidelity, disconnected-browser workflow and final acceptance. Source privacy review and local server tests do not close runtime gates. No new production-readiness claim.
+Still open: runtime network/storage/host-header observation (native DevTools explicitly blocked by organization; no bypass), browser memory, full accessibility/mobile/zoom, disconnected-browser workflow and final acceptance. Source privacy review and local server tests do not close runtime gates. No new production-readiness claim.
 
 
 ## Latest acceptance evidence — 2026-10-18 17:52 UTC

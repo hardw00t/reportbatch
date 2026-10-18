@@ -1,103 +1,137 @@
+<div align="center">
+
 # ReportBatch
 
-A local-first workbench for splitting **searchable, fixed-layout PDFs** into named reports, with full-batch preflight and a page-lineage manifest. No document uploads, telemetry, account, OCR or paid API. The original file is never written.
+### Give every report a clear name.
 
-**Private review build, v0.1.0.** Release evidence lives in [docs/RELEASE-CHECKLIST.md](docs/RELEASE-CHECKLIST.md). A successful build is not a production-readiness claim. Keep this repository private until its owner reviews the evidence and authorizes publication.
+Split searchable PDFs, name reports from their contents, and keep a complete page trail.
 
-## Run locally
+**Local-first · MIT licensed · No account · No paid API**
 
-Use Node.js 22.13+ and npm. The lockfile pins dependencies. Tested environment and exact results are recorded in the release checklist.
+[Quick start](#quick-start) · [How it works](#how-it-works) · [Limits & safety](#limits--safety) · [Validation](#validation) · [Contributing](#contributing)
+
+</div>
+
+> **Release candidate, v0.1.0.** Core workflows have been tested with synthetic documents. Production acceptance is still pending runtime privacy, cold offline-browser, browser-memory and broader accessibility checks. See the [release checklist](docs/RELEASE-CHECKLIST.md).
+
+<p align="center">
+  <img src="docs/evidence/keyboard-responsive/keyboard-csp-export.jpg" alt="ReportBatch showing a synthetic source report, saved layout rules, proposed filenames, field review and verified ZIP export" width="780" />
+  <br /><sub>Real application screenshot using fictional sample reports.</sub>
+</p>
+
+## Why ReportBatch?
+
+For recurring batches where each report follows the same layout: define the identifying fields once, inspect every proposed output, and export named PDFs with evidence of where every page went.
+
+PDF splitting and region-based naming already exist in other tools. ReportBatch focuses on a small, inspectable open-source workflow: **explicit rules, blocking checks, operator corrections and an auditable manifest**. It does not claim unique capabilities or guaranteed extraction accuracy.
+
+| Define | Review | Export |
+| --- | --- | --- |
+| Draw field regions or enter coordinates. Match an exact prefix or one complete line. | Check filenames and page ranges beside the source preview. Resolve missing, ambiguous or clipped values. | Download named PDFs plus `manifest.json`, with source pages, field evidence and SHA-256 checksums. |
+| Save versioned layouts locally or as JSON. | Duplicate filenames block export. Rule and correction changes invalidate approval. | Every generated PDF is reopened before and after ZIP creation. |
+
+## Quick start
+
+Requires **Node.js 22.13+** and npm.
 
 ```sh
+git clone https://github.com/hardw00t/reportbatch.git
+cd reportbatch
 npm ci
 npm run build
 npm run serve
 ```
 
-Open **http://127.0.0.1:4173**. The included server binds only to loopback and serves static GET/HEAD requests. It has no document-processing or upload endpoint. Stop it with Ctrl-C. Set `REPORTBATCH_PORT` to use a different local port. Installation downloads free open-source dependencies; document processing uses no external service.
+Open **http://127.0.0.1:4173**. Stop the server with Ctrl+C. The included server binds to loopback and serves static files; PDF processing runs in the browser. Dependency installation needs internet access. For development, use `npm run dev`.
 
-For development, `npm run dev` serves http://127.0.0.1:5173. Production validation uses the built application, not the dev server.
+### First good export
 
-## First good export
+1. Choose **Try the sample** to load four fictional reports and matching rules.
+2. Run **full-batch preflight**. Review each filename, page range and notice.
+3. Select a report to compare its fields with the source. Enter verified corrections if needed, then recheck.
+4. Confirm your review and **Export verified ZIP**. Check your browser's Downloads list and inspect the PDFs before sharing them.
 
-1. Select **Try the sample**. It loads four fictional, one-page reports and a matching layout.
-2. Run **full-batch preflight**. Inspect each proposed filename and source page range. Select **Review 001**, etc. to compare the fields with the page preview. Dates remain literal; the sample's `12/10/2026` becomes `12_10_2026` solely because `/` is unsafe in a filename.
-3. Resolve missing/ambiguous fields with verified corrections and recheck. Duplicate names block export; suffixes are never silently added. You may deliberately include `{index}` in a filename template after verifying identity.
-4. Confirm the review and select **Export verified ZIP**. The archive contains named PDFs and `manifest.json`. The workbench reopens every generated PDF and then the ZIP's PDFs to check actual counts and hashes before handing the archive to the browser. Confirm the save in your browser's Downloads list.
+For multipage reports, use [the grouped sample](public/samples/grouped-reports.pdf) and **Exact start-marker line** with `REPORT START`. The expected ranges are **1–2, 3, 4–6**. A repeated header can create incorrect boundaries, so review every range.
 
-For multipage reports, load [grouped-reports.pdf](public/samples/grouped-reports.pdf), choose **Split → Exact start-marker line**, use `REPORT START`, then preflight. Expected groups are pages **1–2**, **3**, and **4–6**. Mentions in the body outside the marker region do not create boundaries.
+## How it works
 
-## Layouts and extraction
+- **Searchable, fixed-layout PDFs.** Required fields come from each report's first page. No OCR, AI inference or locale-based date conversion.
+- **Two grouping modes.** One page per report, or an exact whole-line start marker within a chosen region. Marker mode requires a match on page 1; it does not infer boundaries when a value changes.
+- **Literal, predictable names.** Templates support field keys plus `{index}` and `{page}`. Unsafe filename characters are replaced; duplicate names block rather than receive silent suffixes.
+- **Reusable layouts.** Explicitly saved rules use browser `localStorage`. Export/import schema-versioned JSON presets; up to eight required fields.
+- **Review before export.** Missing, ambiguous and clipped values require correction. Cancellation stops the worker; rerun preflight to recover. The original PDF is never written.
 
-- Each required field is read from the **first page of each proposed report**. The default fields are date, author and report type. Import a version-1 preset to define up to eight required fields.
-- Use a case-sensitive line prefix within a bounded region, or a region containing one complete line. Multiple matches, conflicting values and clipped tokens require review. Text line reconstruction is geometric; difficult layouts may be unsupported or require explicit correction.
-- Draw a region or edit its left/top/width/height percentages with the keyboard. Coordinates refer to the visible, cropped, rotated page; every page's viewport is applied independently.
-- **One page per report** and **exact whole-line start marker** are separate explicit modes. Marker mode does not infer a boundary from a value changing. The first source page must match a marker. No markers, orphan pages or multiple markers on one page block the batch.
-- A marker repeated on every page can still create a boundary on every page. Use a marker exclusive to report starts and inspect every range. The application cannot infer the intended meaning of a repeated header.
-- Values are text, not dates or identities to be guessed. No locale conversion, metadata substitution or AI inference occurs. All fields are required even if the filename template does not use them.
-- Rule, source, preset and manual-value edits invalidate approval. Corrections must be rechecked. Cancellation terminates the worker and produces no partial archive; preflight reloads the in-memory source on retry.
+Dates remain text: `12/10/2026` becomes `12_10_2026` only because `/` cannot be used in a filename.
 
-**Save on this device** persists only explicitly saved layout rules in `localStorage`. **Export preset** writes a versioned JSON file with an allowlisted schema. It excludes PDF bytes, page text and manual corrections. Imports reject unsupported properties and oversized input. **Clear saved layouts** removes local layout storage.
-
-## Limits and unsupported documents
-
-| Limit | Bound |
-| --- | --- |
-| Source PDF | 1–500 pages, at most 30 MiB |
-| Extracted text | At most 2,000,000 characters total and 6,000 items per page |
-| Visible page dimensions | 30–10,000 pt per axis |
-| Generated PDFs | At most 200 MiB combined, before manifest/ZIP overhead |
-| Final filename | At most 180 UTF-8 bytes including `.pdf` |
-| Preset import | Version 1, at most 64 KiB and 8 fields |
-| Saved presets | At most 20 on one origin/browser |
-
-These are safety limits, not guarantees that every document inside them will work. Performance results apply only to the tested fixtures and hardware. Thousands of reports are **not supported in one batch** in this release. Use smaller source batches; do not silently omit excess pages.
-
-Rejects encrypted/password-protected files; pages with no usable searchable text (including blank pages); malformed/unsupported layouts; vertical writing; forms, signatures, annotations, attachments, portfolios, layers and document actions. An empty annotation array is accepted. Use an authorized, flattened, searchable PDF from its source; flattening a signature does not preserve signature validity. There is no OCR, signature verification, password removal or sanitization service.
-
-Page content, page order, crop/media boxes and rotation are copied. Bookmarks, document metadata, structure tagging, cross-document links and interactive features are not carried over. Searchable text may still be incorrect in an OCR text layer. Reopened counts/checksums do not prove semantic correctness or pixel equality for arbitrary inputs. Review the output before using it.
-
-## Privacy and recovery
-
-PDF bytes and extracted text remain in workbench memory. There is no IndexedDB, service worker, document cache, session storage or automatic document persistence. Closing the tab or clearing the document releases application references; this is not a secure-erasure guarantee about the browser, OS, extensions, swap or downloaded files. The local static server sends only app assets and synthetic samples. Browser font/codec assets come from the same local build.
-
-The downloaded manifest intentionally includes the source filename and hash, final fields, extraction candidates, corrections, rules, output hashes and page lineage. Protect it like the report PDFs. Rules may themselves contain sensitive text you explicitly type; inspect presets before sharing them.
-
-If a file fails, the original remains unchanged. Read the error and obtain a fresh supported PDF rather than bypassing checks. If the worker stops or an operation is cancelled, rerun preflight; change/reload the original if necessary. If a browser download is blocked or the disk is full, the application cannot confirm the browser saved it: check Downloads and retry from the reviewed batch. See [the threat model](docs/THREAT-MODEL.md) for the boundaries of these protections.
-
-## Reproduce validation
+## Offline package
 
 ```sh
-npm test                 # Pure rules + real PDF integration, cancellation and source-boundary tests
-npm run build            # Typecheck and production assets
-npm run test:e2e         # Real Chrome, actual downloads, keyboard/accessibility/network checks
-npm run test:perf        # Separate 500-page and source-size browser resource checks
-npm run licenses         # Lockfile/package metadata and distribution notices
-npm audit --omit=dev
+npm run package:offline
 ```
 
-Browser tests use an installed Chrome in a temporary profile; no existing browser settings or credentials are used. Alternatively install Playwright's Chromium (`npx playwright install chromium`) and set `PW_CHANNEL=chromium`. No browser installation is required where Chrome already exists. The end-to-end suite owns a loopback server and shuts it down afterwards. It tests a prebuilt `dist/`; rebuild after source changes. `test-results/` and `playwright-report/` retain failures locally and are ignored by Git. Checked-in evidence contains synthetic data only.
+This creates `release/reportbatch-offline.zip` and its SHA-256 file. Extract the complete archive on a machine with Node.js 22.13+ already installed:
 
-Synthetic fixtures are checked in. `npm run fixtures` regenerates the primary PDFs. The embedded Unicode test font is Noto Sans under the SIL Open Font License; source and license are in `tests/fixtures/fonts/`. Optionally regenerate the actual encrypted rejection fixture with `python3 scripts/encrypted-fixture.py` and `pypdf==6.15.0`. Python is not an application dependency. The synthetic password in that script protects fake fixture content only.
+```sh
+node verify.mjs
+node serve.mjs
+```
 
-## Static deployment
+No npm installation is needed on the consuming machine. The archive includes the app, PDF assets, license notices, loopback server and integrity inventory. Use localhost; opening `index.html` with `file://` is unsupported.
 
-`npm run build` creates a self-contained `dist/` directory. Serve all of it, including `vendor/pdfjs` assets and notices, over HTTPS or localhost; opening `index.html` with `file://` is unsupported. `base: './'` supports a directory mount with a trailing slash. Apply the security headers in [scripts/serve.mjs](scripts/serve.mjs), disable access/body logging for documents (no upload route is needed), and do not add analytics. A remote static host would receive ordinary asset requests/IP metadata, so the default supported deployment is local loopback.
+Package integrity and server startup are tested. **A cold, network-disconnected browser workflow remains unverified.** Checksums detect changed files; they do not authenticate the publisher.
 
-An owner-authorized public synthetic preview is available for testing. Its host receives ordinary asset requests and connection metadata; deployed header enforcement remains a separate validation gate. The local loopback build remains the default supported mode. No checkout, payment, application accounts, remote CI or outreach is activated. [Commercial hypothesis](docs/COMMERCIAL-HYPOTHESIS.md) distinguishes observed workflow commissions from unvalidated demand for this product.
+## Limits & safety
 
-## Structure and license
+| Input or output | Current bound |
+| --- | --- |
+| Source | 1–500 pages; at most 30 MiB |
+| Extracted text | 2 million characters total; 6,000 items per page |
+| Visible page dimensions | 30–10,000 pt per axis |
+| Generated PDFs | 200 MiB combined, before ZIP/manifest overhead |
+| Filename | 180 UTF-8 bytes including `.pdf` |
+| Preset | Schema 1; 64 KiB; 1–8 fields; 20 locally saved layouts |
 
-`src/core/` contains pure preset/text/planning logic and PDF verification. `engine.worker.ts` owns expensive batch work; `EngineClient` terminates it on cancellation. `PdfPreview.tsx` renders one page at a time. React state binds approval to the active preflight. No application backend is required.
+These are safety limits, not a promise that every PDF within them works. Unsupported: scans or blank/no-text pages, encrypted files, vertical writing, forms, signatures, annotations, attachments, portfolios, layers and document actions. Bookmarks and document-level structure are not preserved.
 
-Original code: [MIT](LICENSE). Pinned dependency/license metadata is in [docs/DEPENDENCIES.json](docs/DEPENDENCIES.json); the build ships upstream license text in `THIRD_PARTY_NOTICES.txt` and asset license files. License review is recorded in the release checklist.
+**Splitting is not redaction or sanitization.** Shared resources can retain non-visible content. Do not use split PDFs as a confidentiality boundary for untrusted documents. Counts and checksums do not prove semantic accuracy or arbitrary-document visual fidelity.
 
-### Important confidentiality limitation
+### Privacy and recovery
 
-Splitting is not redaction or sanitization. The workbench rejects known article-thread, presentation-step and private application metadata structures, and checks for hidden Page objects outside each output's page tree. Shared resources, unused XObjects or private metadata can still contain non-visible content without extra Page objects. Do not rely on split PDFs as a confidentiality boundary for untrusted source documents. See [VM validation](docs/VM-VALIDATION.md) for current fixes, evidence and browser-test blockers.
+The application has no document-upload endpoint, telemetry or account. PDF bytes and extracted text are processed in memory; only explicitly saved layout rules persist automatically. A hosted copy still receives ordinary asset requests and connection metadata. Runtime network/storage verification remains an open acceptance gate.
 
-## Offline distribution
+The manifest intentionally contains source filenames, field values, corrections and lineage. Protect it like the PDFs. Clearing the document releases application references; it is not secure erasure of browser/OS memory or downloads. If a download fails, check Downloads and retry; the app cannot confirm disk persistence.
 
-`npm run package:offline` builds `release/reportbatch-offline.zip` plus an external SHA-256 file. The archive contains the complete static application, bundled PDF assets, license notices, a dependency-free loopback server, instructions and per-file integrity inventory. On a machine with Node.js 22.13+ already installed, extract it, run `node verify.mjs`, then `node serve.mjs`. No npm install is needed on the consuming machine. Keep the whole archive together; `file://` is unsupported.
+Read the [threat model](docs/THREAT-MODEL.md) and [release runbook](docs/RELEASE-RUNBOOK.md) before relying on outputs.
 
-The package bytes are deterministic for identical built inputs. Integrity checks detect changes/missing/extra files; they do not authenticate the publisher. Obtain the ZIP and external checksum through the trusted release channel. Package generation/verification and loopback startup are tested; a network-disconnected browser workflow remains a separate gate, not a claim established by packaging.
+## Validation
+
+**Recorded evidence:** 35 Node tests and production build pass. Live synthetic checks cover presets, grouped reports, Unicode, rotated/cropped and mixed-size output, clipping rejection/recovery, 500-report export and cancellation, exact size/page boundaries, keyboard flows and zoom. Downloaded PDFs are independently reopened and checked against their manifests.
+
+**Still open:** runtime request/storage and hosted-header inspection, cold offline-browser execution, browser-memory measurement, broader accessibility/mobile coverage. Manual browser checks do not mean the automated browser suite passed.
+
+```sh
+npm test                 # Rules, real PDFs, server and packaging
+npm run build            # Typecheck, assets and production CSP checks
+npm run test:e2e          # Browser workflow, accessibility and privacy checks
+npm run test:perf         # Separate browser performance/boundary suite
+npm run fixtures         # Regenerate synthetic PDFs
+npm run licenses         # Dependency/license inventory
+```
+
+Browser tests require installed Chrome, or Playwright Chromium with `PW_CHANNEL=chromium`. Build first. See [current evidence](docs/RELEASE-CHECKLIST.md), [final live regressions](docs/FINAL-LIVE-REGRESSION.md) and [remaining gates](docs/NEXT-VALIDATION.md) for exact coverage and limitations.
+
+## Contributing
+
+Small, reproducible fixes are welcome. Include a **synthetic** failing fixture, expected behavior and regression test. Run tests and build; describe browser/platform coverage honestly. Never attach confidential PDFs, credentials or customer data to an issue or pull request.
+
+Keep the scope focused: fixed-layout searchable PDFs, explicit review and traceable outputs. Please discuss substantial features before implementing them. There is no paywall or paid-feature tier.
+
+- `src/core/` — extraction, rules, planning and PDF verification
+- `src/engine.worker.ts` — batch processing and cancellation
+- `src/App.tsx` — layout and review workflow
+- `tests/` — core, PDF and browser regressions
+- `scripts/` — fixtures, local serving and offline packaging
+
+## License
+
+[MIT](LICENSE). Dependency metadata and license review are recorded in [DEPENDENCIES.json](docs/DEPENDENCIES.json) and [DEPENDENCY-REVIEW.md](docs/DEPENDENCY-REVIEW.md). Distribution builds include upstream notices and asset licenses. The synthetic Unicode fixture uses Noto Sans under the SIL Open Font License.

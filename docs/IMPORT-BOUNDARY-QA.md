@@ -33,7 +33,7 @@ docs/evidence/import-boundaries/
 - unicode.zip,unicode-extracted/,unicode-export.jpg
 - unsupported-results.json,geometry-results.json,issues-corrected.jpg
 - devtools-policy-block.png
-Fixtures: /workspace/shared/reportbatch/public/samples/, tests/fixtures/; /workspace/shared/reportbatch-qa-inputs/.
+Fixtures: `public/samples/`, `tests/fixtures/`, and the generated corpus from `scripts/qa-inputs.ts`.
 No new application failure established in this run. Remaining gates above prevent an unconditional production-ready claim.
 
 Durable evidence includes manifests, archive SHA-256/size inventory and independent verification results. Large raw ZIPs remain in the QA workspace; they are not committed to source.

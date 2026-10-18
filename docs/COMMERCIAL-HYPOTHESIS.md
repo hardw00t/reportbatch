@@ -21,12 +21,8 @@ This is an established category; local processing, region naming and previews ar
 
 ReportBatch's proposed positioning is a focused workflow: versioned fixed-layout presets, full-batch blockers instead of silent guesses, explicit missing/ambiguous values, and a deterministic manifest mapping every source page to its output. This is a packaging and service hypothesis, not a claim competitors lack these capabilities. Vendor descriptions are not hands-on competitive tests.
 
-## Proposed service to validate: US$149 per configured layout
+## Open-source direction
 
-The code is MIT-licensed. A possible **one-time US$149 configured-workflow service** would include one supported fixed-layout preset (up to eight required fields), a naming template, one explicit grouping rule, a local installation walkthrough and an acceptance checklist on operator-supplied synthetic/redacted examples. Proposed scope: one revision, up to 500 pages/30 MiB per batch within the published limits. No recurring fee, OCR, integrations, legal/accounting advice, unlimited support or guaranteed accuracy is implied.
+ReportBatch is an MIT-licensed open-source utility. There is no paid tier, paywall or active configured-workflow offer. Earlier pricing ideas were unvalidated research and are not the product plan.
 
-This is not an active offer and no sale or payment is enabled. The price is a testable proposal, not a validated price point or revenue forecast. Before offering it, validate whether target operators can configure and review their workflow, whether this service saves enough repeat work, and whether they would pay the proposed amount. Any interviews, customer document handling, outreach, payment setup or hosting require separate authorization; none occurred in this work.
-
-## Practical next acceptance questions
-
-Can an operator get a correct first export from the synthetic sample quickly? Can a second batch reuse a preset without storing source content? Are exceptions visible and recoverable? Does the page trail make review easier? Can the proposed service be delivered within its fixed scope? Product QA can answer the first four on fixtures; customer willingness to pay remains untested.
+The practical questions are whether operators can get a correct first export, reuse presets safely, recover from exceptions and inspect the page trail. Synthetic QA tests these behaviors; it does not establish customer demand or superiority over existing tools.

@@ -1,0 +1,90 @@
+[
+  {
+    "page": 1,
+    "filename": "2026-10-12_Alex Morgan_Site visit.pdf",
+    "geometry": {
+      "media": [
+        0.0,
+        0.0,
+        612.0,
+        792.0
+      ],
+      "crop": [
+        0.0,
+        0.0,
+        612.0,
+        792.0
+      ],
+      "rotation": 0
+    },
+    "pixelIdentical": true,
+    "sha256Verified": true,
+    "manualCorrections": false
+  },
+  {
+    "page": 2,
+    "filename": "2026-10-13_Casey Reed_Inspection.pdf",
+    "geometry": {
+      "media": [
+        0.0,
+        0.0,
+        595.0,
+        842.0
+      ],
+      "crop": [
+        0.0,
+        0.0,
+        595.0,
+        842.0
+      ],
+      "rotation": 0
+    },
+    "pixelIdentical": true,
+    "sha256Verified": true,
+    "manualCorrections": false
+  },
+  {
+    "page": 3,
+    "filename": "12_10_2026_Zo\u00eb Martin_Survey.pdf",
+    "geometry": {
+      "media": [
+        0.0,
+        0.0,
+        612.0,
+        792.0
+      ],
+      "crop": [
+        0.0,
+        0.0,
+        612.0,
+        792.0
+      ],
+      "rotation": 0
+    },
+    "pixelIdentical": true,
+    "sha256Verified": true,
+    "manualCorrections": false
+  },
+  {
+    "page": 4,
+    "filename": "2026-10-15_Jordan Lee_Progress.pdf",
+    "geometry": {
+      "media": [
+        0.0,
+        0.0,
+        595.0,
+        842.0
+      ],
+      "crop": [
+        0.0,
+        0.0,
+        595.0,
+        842.0
+      ],
+      "rotation": 0
+    },
+    "pixelIdentical": true,
+    "sha256Verified": true,
+    "manualCorrections": false
+  }
+]
