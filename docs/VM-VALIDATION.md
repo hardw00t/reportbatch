@@ -26,3 +26,7 @@ Browser tests did not execute application assertions on this VM: Chromium startu
 `node --import tsx scripts/benchmark-node.ts` completed on Linux x64 / Node 24.19.0: load 1,667 ms, preflight 17 ms, export 1,730 ms, total including independent PDF reopening 3,491 ms. All 500 PDFs reopened with one page each and source partition 1–500 verified. Peak Node-process RSS was 670,624 KiB (includes fixture generation). [Machine-readable evidence](evidence/performance-node-500.json). This synthetic Node result does not establish browser memory/performance, customer-file behavior, visual equivalence or a general service-level guarantee.
 
 After restoring the workspace, a bounded supported browser retry again returned connection refused even though the server readiness probe in its own execution session returned HTTP 200 and expected security headers. The temporary server was stopped. Browser validation remains blocked.
+
+## Deterministic property regressions
+
+Final `npm test`: **29 passed, zero failed**, including 2,500 seeded Unicode/path/device-name filename cases, 400 randomized exact-marker partitions/orphan cases, 100 deterministic planning/manual-correction identity cases, and nested preset allowlist/nonfinite geometry checks. Random seeds are fixed in `tests/property.test.ts`; no customer data or new testing dependency is used. These are bounded regressions rather than exhaustive proofs. RELEASE-CHECKLIST.md now distinguishes current VM results from historical Mac results.

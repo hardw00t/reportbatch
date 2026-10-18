@@ -1,5 +1,20 @@
 # Release evidence — private review build
 
+## Current VM status — 2026-10-18
+
+**Not release ready; repository remains private.** Latest evidence: [VM validation](VM-VALIDATION.md). Mac results below are historical and do not validate subsequent source changes.
+
+- PASS: final Node suite **29/29**, including 2,500 seeded filename cases, 400 marker partitions, 100 deterministic planning/correction cases, nested preset validation, real-PDF regressions and size/page boundaries.
+- PASS: production typecheck/build. Large PDF-library bundle advisory remains.
+- PASS, narrow scope: synthetic Node-only 500-output export and independent reopen/page-partition verification in 3.49 seconds; peak Node RSS 670,624 KiB including fixture creation. This does not establish browser performance.
+- FIXED WITH NODE REGRESSIONS: region-scoped marker reconstruction, UserUnit text widths, reserved/truncated names and Unicode collision keys, active presentation steps, article beads, private application metadata, and extra hidden Page objects in copied output graphs.
+- TYPECHECKED / READ-ONLY REVIEWED, BROWSER UNRUN: delayed sample/preset operation guards, cancellation, double-click protection. Browser regression added.
+- BLOCKED: final browser workflow, accessibility/mobile, keyboard/download and browser resource/performance suites. Chromium local-socket startup and escalation launcher failed; supported dot browser could not reach the exec-local server despite an HTTP 200 readiness check in that server's session.
+- LIMITATION: split PDFs are not a sanitization or confidentiality boundary; shared resources/non-visible content can remain. No comprehensive hostile-PDF security claim.
+- PENDING: complete browser/visual checks, broader platform/assistive-technology checks, and owner release review/authorization. No hosting, remote CI, payments or outreach enabled.
+
+## Historical Mac checkpoint
+
 Status: **in validation; keep private**. Mac work stopped for cloud handoff at the user's request on 2026-10-18. This file distinguishes observed checks from unrun gates. It is not a production-readiness claim. See [HANDOFF.md](HANDOFF.md).
 
 | Gate | Status at restored milestone | Evidence |
